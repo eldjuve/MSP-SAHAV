@@ -31,7 +31,7 @@ function DropdownItem(props: { item: DataRepoItem; depth: number }) {
         </Show>
       </button>
       <Show when={hasChildren()}>
-        <ul class="absolute left-full top-0 min-w-[200px] bg-msp-menu-bg shadow-md hidden group-hover/sub:block">
+        <ul class="absolute left-full top-0 min-w-50 bg-msp-menu-bg shadow-md hidden group-hover/sub:block">
           <For each={children()}>
             {child => <DropdownItem item={child} depth={props.depth + 1} />}
           </For>
@@ -77,7 +77,7 @@ export function Navbar() {
                     </Show>
                   </button>
                   <Show when={hasMenu()}>
-                    <ul class="absolute left-0 top-full min-w-[200px] bg-msp-menu-bg shadow-md hidden group-hover:block">
+                    <ul class="absolute left-0 top-full min-w-50 bg-msp-menu-bg shadow-md hidden group-hover:block">
                       <For each={menuData()!}>
                         {item => <DropdownItem item={item} depth={0} />}
                       </For>

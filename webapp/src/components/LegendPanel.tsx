@@ -4,7 +4,7 @@ import { closePanel } from '../stores/uiStore';
 
 export function LegendPanel() {
   return (
-    <div class="absolute top-4 right-[100px] bg-white rounded-xl shadow-md w-72 max-h-[500px] flex flex-col overflow-hidden">
+    <div class="absolute top-4 right-25 bg-white rounded-xl shadow-md w-72 max-h-125 flex flex-col overflow-hidden">
       <div class="flex justify-between items-center bg-gray-100 px-2.5 py-2.5 rounded-t-xl font-bold">
         <span>Legend</span>
         <button onClick={closePanel} class="text-gray-600 hover:text-red-500">
@@ -17,7 +17,7 @@ export function LegendPanel() {
             {entry => (
               <div class="mb-3">
                 <Show when={entry.custom}>
-                  <div class="font-semibold text-[13px] mb-1">{entry.name}</div>
+                  <div class="font-semibold text-xs mb-1">{entry.name}</div>
                 </Show>
                 <div class="flex items-center gap-2">
                   <img
@@ -27,7 +27,7 @@ export function LegendPanel() {
                     class="shrink-0"
                   />
                   <Show when={!entry.custom}>
-                    <span class="text-[13px]">{entry.name}</span>
+                    <span class="text-xs">{entry.name}</span>
                   </Show>
                 </div>
               </div>

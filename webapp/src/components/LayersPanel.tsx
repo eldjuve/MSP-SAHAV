@@ -33,7 +33,7 @@ function LayerItem(props: { node: LayerNode }) {
           onChange={e => toggleId(props.node.Number, e.currentTarget.checked, props.node)}
           class="cursor-pointer shrink-0"
         />
-        <label for={props.node.Number} class="text-[#3f4346] text-[13px] truncate cursor-pointer">
+        <label for={props.node.Number} class="text-[#3f4346] text-xs truncate cursor-pointer">
           {props.node.Name}
         </label>
       </div>
@@ -89,7 +89,7 @@ export function LayersPanel() {
   const tree = () => layersTree();
 
   return (
-    <div class="absolute top-4 right-[100px] bg-white rounded-xl shadow-md w-72 max-h-[500px] flex flex-col overflow-hidden">
+    <div class="absolute top-4 right-25 bg-white rounded-xl shadow-md w-72 max-h-125 flex flex-col overflow-hidden">
       <div class="flex justify-between items-center bg-gray-100 px-2.5 py-2.5 rounded-t-xl font-bold">
         <span>Layers</span>
         <button onClick={closePanel} class="text-gray-600 hover:text-red-500">

@@ -7,7 +7,7 @@ export function InfoSidebar() {
 
   return (
     <div
-      class="fixed top-[117px] right-0 w-[40vw] max-md:w-full h-[calc(100%-117px)] bg-[#f3f3f3] shadow-[-2px_0_5px_rgba(0,0,0,0.2)] transition-transform duration-500"
+      class="fixed top-29 right-0 w-[40vw] max-md:w-full h-[calc(100%-7.25rem)] bg-[#f3f3f3] shadow-[-2px_0_5px_rgba(0,0,0,0.2)] transition-transform duration-500"
       style={{ transform: sidebarOpen() ? 'translateX(0)' : 'translateX(100%)' }}
     >
       {/* Handle tab */}
@@ -42,7 +42,7 @@ export function InfoSidebar() {
                   </button>
                 </div>
                 <hr class="my-2" />
-                <div class="text-[13px] text-justify leading-relaxed">
+                <div class="text-xs text-justify leading-relaxed">
                   <Show when={c().subpara}>
                     <p class="mb-2" innerHTML={c().subpara} />
                   </Show>

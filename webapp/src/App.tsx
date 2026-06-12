@@ -1,4 +1,4 @@
-import { Show } from 'solid-js';
+import { Switch, Match } from 'solid-js';
 import { TopBar } from './components/TopBar';
 import { Navbar } from './components/Navbar';
 import { MapContainer } from './components/MapContainer';
@@ -17,15 +17,17 @@ export function App() {
       <div class="relative h-full overflow-hidden">
         <MapContainer />
         <MapWidget />
-        <Show when={activePanel() === 'layers'}>
-          <LayersPanel />
-        </Show>
-        <Show when={activePanel() === 'legend'}>
-          <LegendPanel />
-        </Show>
-        <Show when={activePanel() === 'basemaps'}>
-          <BasemapsPanel />
-        </Show>
+        <Switch>
+          <Match when={activePanel() === 'layers'}>
+            <LayersPanel />
+          </Match>
+          <Match when={activePanel() === 'legend'}>
+            <LegendPanel />
+          </Match>
+          <Match when={activePanel() === 'basemaps'}>
+            <BasemapsPanel />
+          </Match>
+        </Switch>
         <InfoSidebar />
       </div>
     </div>
