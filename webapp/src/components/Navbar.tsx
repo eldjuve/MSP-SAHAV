@@ -1,4 +1,6 @@
-import { createSignal, For, Show } from 'solid-js';
+import { For, Show } from 'solid-js';
+import { DropdownMenu } from '@kobalte/core/dropdown-menu';
+import { createSignal } from 'solid-js';
 import { configState } from '../stores/configStore';
 import { handleMenuItemClick } from '../lib/menuHandler';
 import type { DataRepoItem } from '../stores/configStore';
@@ -13,31 +15,34 @@ const NAV_ITEMS = [
   { label: 'Services-MoES', key: 'services' },
 ];
 
-function DropdownItem(props: { item: DataRepoItem; depth: number }) {
+
+function NavDropdownItem(props: { item: DataRepoItem }) {
   const label = () => props.item.category ?? props.item.name ?? '';
-  const children = () =>
-    props.item.items?.map(i => ({ category: i.name ?? i.category, items: i.items })) ?? [];
-  const hasChildren = () => children().length > 0;
+  const hasChildren = () => (props.item.items?.length ?? 0) > 0;
 
   return (
-    <li class="relative group/sub">
-      <button
-        class="w-full text-left px-4 py-2.5 text-sm font-bold text-[#36383a] flex justify-between items-center whitespace-nowrap hover:bg-msp-dark hover:text-white transition-colors"
-        onClick={() => !hasChildren() && handleMenuItemClick(label())}
-      >
-        {label()}
-        <Show when={hasChildren()}>
-          <span class="ml-4 text-xs">►</span>
-        </Show>
-      </button>
-      <Show when={hasChildren()}>
-        <ul class="absolute left-full top-0 min-w-50 bg-msp-menu-bg shadow-md hidden group-hover/sub:block">
-          <For each={children()}>
-            {child => <DropdownItem item={child} depth={props.depth + 1} />}
-          </For>
-        </ul>
-      </Show>
-    </li>
+    <Show
+      when={hasChildren()}
+      fallback={
+        <DropdownMenu.Item class="dd-item" onSelect={() => handleMenuItemClick(label())}>
+          {label()}
+        </DropdownMenu.Item>
+      }
+    >
+      <DropdownMenu.Sub>
+        <DropdownMenu.SubTrigger class="dd-sub-trigger">
+          {label()}
+          <span class="text-gray-400 text-xs">►</span>
+        </DropdownMenu.SubTrigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.SubContent class="dd-content">
+            <For each={props.item.items}>
+              {child => <NavDropdownItem item={child} />}
+            </For>
+          </DropdownMenu.SubContent>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Sub>
+    </Show>
   );
 }
 
@@ -66,22 +71,31 @@ export function Navbar() {
               const hasMenu = () => !!menuData()?.length;
 
               return (
-                <li class={`relative ${hasMenu() ? 'group' : ''}`}>
-                  <button
-                    class={`px-3 py-1.5 text-sm font-semibold text-[#36383a] whitespace-nowrap ${hasMenu() ? 'cursor-pointer hover:underline' : 'cursor-not-allowed opacity-70'}`}
-                    onClick={() => { if (!hasMenu()) return; setMobileOpen(false); }}
+                <li>
+                  <Show
+                    when={hasMenu()}
+                    fallback={
+                      <button
+                        class="px-3 py-1.5 text-sm font-semibold text-[#36383a] whitespace-nowrap cursor-not-allowed opacity-50"
+                        disabled
+                      >
+                        {nav.label}
+                      </button>
+                    }
                   >
-                    {nav.label}
-                    <Show when={hasMenu()}>
-                      <span class="ml-1 text-xs">▾</span>
-                    </Show>
-                  </button>
-                  <Show when={hasMenu()}>
-                    <ul class="absolute left-0 top-full min-w-50 bg-msp-menu-bg shadow-md hidden group-hover:block">
-                      <For each={menuData()!}>
-                        {item => <DropdownItem item={item} depth={0} />}
-                      </For>
-                    </ul>
+                    <DropdownMenu>
+                      <DropdownMenu.Trigger class="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-semibold text-[#36383a] whitespace-nowrap rounded-sm outline-none hover:bg-black/10 data-expanded:bg-black/10 transition-colors">
+                        {nav.label}
+                        <span class="text-xs opacity-60">▾</span>
+                      </DropdownMenu.Trigger>
+                      <DropdownMenu.Portal>
+                        <DropdownMenu.Content class="dd-content">
+                          <For each={menuData()!}>
+                            {item => <NavDropdownItem item={item} />}
+                          </For>
+                        </DropdownMenu.Content>
+                      </DropdownMenu.Portal>
+                    </DropdownMenu>
                   </Show>
                 </li>
               );

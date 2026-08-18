@@ -29,6 +29,27 @@ html, body {
 ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: #555; }
 
+/* Dropdown menu (shadcn-style) */
+@layer components {
+  .dd-content {
+    @apply z-50 min-w-50 overflow-hidden rounded-md border border-gray-200 bg-white p-1 text-gray-900 shadow-md;
+  }
+  .dd-item {
+    @apply relative flex cursor-default select-none items-center justify-between gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors;
+    @apply data-[highlighted]:bg-gray-100 data-[highlighted]:text-gray-900;
+    @apply data-[disabled]:pointer-events-none data-[disabled]:opacity-50;
+  }
+  .dd-sub-trigger {
+    @apply relative flex cursor-default select-none items-center justify-between gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors;
+    @apply data-[highlighted]:bg-gray-100 data-[highlighted]:text-gray-900;
+    @apply data-[state=open]:bg-gray-100;
+    @apply data-[disabled]:pointer-events-none data-[disabled]:opacity-50;
+  }
+  .dd-separator {
+    @apply -mx-1 my-1 h-px bg-gray-100;
+  }
+}
+
 /* Leaflet overrides */
 .leaflet-control-zoom {
   border: none !important;
