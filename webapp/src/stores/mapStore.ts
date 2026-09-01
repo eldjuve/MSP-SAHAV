@@ -2,11 +2,7 @@ import { createSignal } from 'solid-js';
 import L from 'leaflet';
 
 export type BasemapType = 'satellite' | 'imagery' | 'topo';
-export type LegendEntry = { layerId: string; service: string; name: string; custom: boolean };
-
-export const LAYERS_WITH_CUSTOM_LEGENDS = new Set([
-  'lulc', 'geomorph', 'biohotspots', 'cps', 'vuln', 'coastameni', 'TvsS', 'TvsF', 'mof',
-]);
+export type LegendEntry = { layerId: string; service: string; name: string };
 
 const LAYERS_NOT_TRANSPARENT = new Set([
   'MSPudhu:Marine_Outfall', 'MSPudhu:VillageNames', 'MSPudhu:Tourism_Activity',
@@ -30,9 +26,11 @@ const LAYERS_NOT_TRANSPARENT = new Set([
   'MSPudhu:Sports_Activities', 'MSPudhu:Sand_Dune', 'MSPudhu:SandSpit',
 ]);
 
-export const GEOSERVER_URL = 'https://yourdomain.in/geoserver/MSPudhu/wms';
-export const LEGEND_BASE_URL =
-  `${GEOSERVER_URL}?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=`;
+// Override via VITE_GEOSERVER_URL in .env.local to point at the demo
+// GeoServer (see demo-geoserver/README.md — docker compose up in
+// demo-geoserver/) or any other instance without editing source.
+export const GEOSERVER_URL =
+  import.meta.env.VITE_GEOSERVER_URL ?? 'https://yourdomain.in/geoserver/MSPudhu/wms';
 
 export const [basemap, setBasemap] = createSignal<BasemapType>(
   (sessionStorage.getItem('basemap') as BasemapType | null) ?? 'imagery',
@@ -44,7 +42,6 @@ export const [legendEntries, setLegendEntries] = createSignal<LegendEntry[]>([])
 let _map: L.Map | null = null;
 let _basemapLayer: L.TileLayer | null = null;
 const _addedLayers: Record<string, L.TileLayer.WMS> = {};
-let _extraLayers: L.Layer[] = [];
 
 export function getMap() { return _map; }
 
@@ -74,6 +71,14 @@ export function initMapInstance(el: HTMLDivElement) {
   );
   L.control.zoom({ position: 'bottomright' }).addTo(_map);
   applyBasemap(basemap());
+
+  // Leaflet only listens for window resize events, so a CSS-driven resize
+  // of its own container (e.g. the info sidebar pushing the map narrower)
+  // leaves tiles rendering offset/torn until this fires invalidateSize.
+  const map = _map;
+  const resizeObserver = new ResizeObserver(() => map.invalidateSize());
+  resizeObserver.observe(el);
+  map.on('unload', () => resizeObserver.disconnect());
 }
 
 export function applyBasemap(type: BasemapType) {
@@ -100,10 +105,7 @@ export function addWmsLayer(layerId: string, service: string, name: string) {
   layer.addTo(_map);
   _addedLayers[layerId] = layer;
 
-  setLegendEntries(prev => [
-    ...prev,
-    { layerId, service, name, custom: LAYERS_WITH_CUSTOM_LEGENDS.has(layerId) },
-  ]);
+  setLegendEntries(prev => [...prev, { layerId, service, name }]);
 }
 
 export function removeWmsLayer(layerId: string) {
@@ -123,44 +125,22 @@ export function clearAllWmsLayers() {
   setSelectedLayerIds([]);
 }
 
-export function clearExtraLayers() {
-  if (!_map) return;
-  _extraLayers.forEach(l => _map!.removeLayer(l));
-  _extraLayers = [];
-}
-
-export function addExtraLayer(layer: L.Layer) {
-  if (!_map) return;
-  layer.addTo(_map);
-  _extraLayers.push(layer);
-}
-
 export function setMapView(center: [number, number], zoom: number) {
   _map?.setView(new L.LatLng(center[0], center[1]), zoom);
 }
 
-export async function zoomToLayer(service: string) {
-  if (!_map) return;
-  const stripped = service.replace('MSPudhu:', '').replace(/ /g, '%20');
-  try {
-    const res = await fetch(`${GEOSERVER_URL}?service=WMS&version=1.1.1&request=GetCapabilities`);
-    const xml = await res.text();
-    const doc = new DOMParser().parseFromString(xml, 'application/xml');
-    for (const layer of Array.from(doc.getElementsByTagName('Layer'))) {
-      const nameEl = layer.getElementsByTagName('Name')[0];
-      if (nameEl?.textContent === stripped || nameEl?.textContent === service.replace('MSPudhu:', '')) {
-        const bbox = layer.getElementsByTagName('LatLonBoundingBox')[0];
-        if (bbox) {
-          const bounds = L.latLngBounds(
-            [parseFloat(bbox.getAttribute('miny')!), parseFloat(bbox.getAttribute('minx')!)],
-            [parseFloat(bbox.getAttribute('maxy')!), parseFloat(bbox.getAttribute('maxx')!)],
-          );
-          _map.fitBounds(bounds);
-        }
-        break;
-      }
-    }
-  } catch (e) {
-    console.error('Error fetching layer bounds', e);
-  }
+// Local layer name (without the "workspace:" prefix) and workspace prefix —
+// GeoServer's WMS capabilities and its GeoJSON featureID scheme both
+// address layers by local name. See src/lib/capabilities.ts, which owns
+// fetching/parsing GetCapabilities itself (zoomToLayer included).
+export function getLayerName(service: string): string {
+  return service.replace(/^[^:]+:/, '');
+}
+
+export function getWorkspace(service: string): string {
+  return service.match(/^([^:]+):/)?.[1] ?? '';
+}
+
+export function wmsUrlForWorkspace(workspace: string): string {
+  return GEOSERVER_URL.replace(/\/[^/]+\/wms$/, `/${workspace}/wms`);
 }

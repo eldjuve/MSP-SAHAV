@@ -8,6 +8,8 @@ import {
   legendEntries,
 } from '../stores/mapStore';
 import { findNodeByNumber } from '../lib/layerTree';
+import { loadFeatureCharts } from '../lib/charts';
+import { setFeatureChartOptions, clearFeatureChartOptions } from '../stores/uiStore';
 
 export function MapContainer() {
   let mapDiv!: HTMLDivElement;
@@ -24,14 +26,24 @@ export function MapContainer() {
     const toRemove = prevSelectedIds.filter(id => !current.includes(id));
     const toAdd = current.filter(id => !prevSelectedIds.includes(id));
 
-    toRemove.forEach(id => removeWmsLayer(id));
+    toRemove.forEach(id => {
+      removeWmsLayer(id);
+      clearFeatureChartOptions(id);
+    });
     toAdd.forEach(id => {
       const node = findNodeByNumber(tree, id);
-      if (node?.service) addWmsLayer(id, node.service, node.Name);
+      if (!node?.service) return;
+      addWmsLayer(id, node.service, node.Name);
+      // Any selected feature may expose chart_data — try it and ignore a
+      // miss. Guard against the layer having been deselected again before
+      // this resolves.
+      loadFeatureCharts(node.service).then(reports => {
+        if (selectedLayerIds().includes(id)) setFeatureChartOptions(id, reports);
+      });
     });
 
     prevSelectedIds = [...current];
   });
 
-  return <div ref={mapDiv} class="absolute inset-0 -z-1" />
+  return <div ref={mapDiv} class="absolute inset-0 isolate" />
 }

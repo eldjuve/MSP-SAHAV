@@ -1,6 +1,51 @@
-import { For, Show } from 'solid-js';
-import { legendEntries, LEGEND_BASE_URL } from '../stores/mapStore';
+import { createResource, For, Show } from 'solid-js';
+import { legendEntries } from '../stores/mapStore';
 import { closePanel } from '../stores/uiStore';
+import { fetchLegendClasses, type LegendClass, type LegendSwatch } from '../lib/legend';
+import type { LegendEntry } from '../stores/mapStore';
+
+function swatchStyle(swatch: LegendSwatch): Record<string, string> {
+  switch (swatch.kind) {
+    case 'polygon':
+      return { 'background-color': swatch.fill, border: `1px solid ${swatch.stroke}` };
+    case 'point':
+      return { 'background-color': swatch.fill, border: `1px solid ${swatch.stroke}`, 'border-radius': '9999px' };
+    case 'line':
+      return { 'border-top': `2px solid ${swatch.stroke}` };
+  }
+}
+
+function Swatch(props: { swatch: LegendSwatch }) {
+  return (
+    <span
+      class="inline-block w-3.5 shrink-0"
+      classList={{ 'h-3.5': props.swatch.kind !== 'line' }}
+      style={swatchStyle(props.swatch)}
+    />
+  );
+}
+
+function LegendEntryRow(props: { entry: LegendEntry }) {
+  const [classes] = createResource(() => props.entry.service, fetchLegendClasses);
+
+  return (
+    <div class="mb-3">
+      <div class="font-semibold text-xs mb-1">{props.entry.name}</div>
+      <div class="flex flex-col gap-1">
+        <For each={classes()}>
+          {(cls: LegendClass) => (
+            <div class="flex items-center gap-2">
+              <Swatch swatch={cls.swatch} />
+              <Show when={cls.title}>
+                <span class="text-xs">{cls.title}</span>
+              </Show>
+            </div>
+          )}
+        </For>
+      </div>
+    </div>
+  );
+}
 
 export function LegendPanel() {
   return (
@@ -13,26 +58,7 @@ export function LegendPanel() {
       </div>
       <div class="overflow-y-auto p-2.5 flex-1 text-sm">
         <Show when={legendEntries().length} fallback={<p class="text-gray-500">No active layers.</p>}>
-          <For each={legendEntries()}>
-            {entry => (
-              <div class="mb-3">
-                <Show when={entry.custom}>
-                  <div class="font-semibold text-xs mb-1">{entry.name}</div>
-                </Show>
-                <div class="flex items-center gap-2">
-                  <img
-                    src={`${LEGEND_BASE_URL}${encodeURIComponent(entry.service)}`}
-                    alt={entry.name}
-                    width="30"
-                    class="shrink-0"
-                  />
-                  <Show when={!entry.custom}>
-                    <span class="text-xs">{entry.name}</span>
-                  </Show>
-                </div>
-              </div>
-            )}
-          </For>
+          <For each={legendEntries()}>{entry => <LegendEntryRow entry={entry} />}</For>
         </Show>
       </div>
     </div>

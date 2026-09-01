@@ -1,0 +1,30 @@
+{
+  "dataRepository": {
+    "layer": "MSPudhu:DataRepository",
+    "submenus": ["MSPudhu:Environment", "MSPudhu:Ecology", "MSPudhu:Human_Activities", "MSPudhu:Socio_Economic"]
+  },
+  "status indicators": {
+    "items": [
+      {
+        "label": "Ecological",
+        "items": [
+          { "label": "Water Quality", "layer": "MSPudhu:District_Boundary" }
+        ]
+      },
+      { "label": "Marine Pollution", "layer": "MSPudhu:Marine_Outfall" }
+    ]
+  },
+  "conflicts": {
+    "items": [
+      { "label": "Ecology vs Human Activities", "layer": "MSPudhu:Ecology_vs_Human_Activities" },
+      { "label": "Tourism vs Shoreline", "layer": "MSPudhu:Tourism_vs_Shoreline_Group" },
+      { "label": "Fisheries vs Tourism", "layer": "MSPudhu:Fisheries_vs_Tourism" }
+    ]
+  },
+  "services": {
+    "items": [
+      { "label": "Vulnerability", "layer": "MSPudhu:Vulnerability" },
+      { "label": "INCOIS Services", "link": "https://incois.gov.in/portal/stormsurge/webgis.jsp" }
+    ]
+  }
+}

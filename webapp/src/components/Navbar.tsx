@@ -3,7 +3,7 @@ import { DropdownMenu } from '@kobalte/core/dropdown-menu';
 import { createSignal } from 'solid-js';
 import { configState } from '../stores/configStore';
 import { handleMenuItemClick } from '../lib/menuHandler';
-import type { DataRepoItem } from '../stores/configStore';
+import type { NavEntryConfig } from '../stores/configStore';
 
 const NAV_ITEMS = [
   { label: 'Data Repository', key: 'dataRepository' },
@@ -16,22 +16,21 @@ const NAV_ITEMS = [
 ];
 
 
-function NavDropdownItem(props: { item: DataRepoItem }) {
-  const label = () => props.item.category ?? props.item.name ?? '';
+function NavDropdownItem(props: { item: NavEntryConfig }) {
   const hasChildren = () => (props.item.items?.length ?? 0) > 0;
 
   return (
     <Show
       when={hasChildren()}
       fallback={
-        <DropdownMenu.Item class="dd-item" onSelect={() => handleMenuItemClick(label())}>
-          {label()}
+        <DropdownMenu.Item class="dd-item" onSelect={() => handleMenuItemClick(props.item)}>
+          {props.item.label}
         </DropdownMenu.Item>
       }
     >
       <DropdownMenu.Sub>
         <DropdownMenu.SubTrigger class="dd-sub-trigger">
-          {label()}
+          {props.item.label}
           <span class="text-gray-400 text-xs">►</span>
         </DropdownMenu.SubTrigger>
         <DropdownMenu.Portal>
@@ -63,11 +62,11 @@ export function Navbar() {
 
         {/* Nav items */}
         <ul
-          class={`flex-col md:flex-row flex-wrap md:flex items-start md:items-center gap-x-1 bg-white md:bg-transparent absolute md:relative top-full left-0 right-0 md:top-auto shadow-md md:shadow-none p-3 md:p-0 ${mobileOpen() ? 'flex' : 'hidden md:flex'}`}
+          class={`flex-col md:flex-row flex-wrap md:flex items-start md:items-center gap-x-1 bg-white md:bg-transparent absolute md:relative top-full left-0 right-0 md:top-auto shadow-md md:shadow-none p-3 md:p-0 z-[1100] ${mobileOpen() ? 'flex' : 'hidden md:flex'}`}
         >
           <For each={NAV_ITEMS}>
             {nav => {
-              const menuData = () => nav.key ? configState.datarepo[nav.key] : null;
+              const menuData = () => nav.key ? configState.nav[nav.key] : null;
               const hasMenu = () => !!menuData()?.length;
 
               return (

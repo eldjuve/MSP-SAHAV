@@ -1,103 +1,68 @@
-import { configState } from '../stores/configStore';
+import type { NavEntryConfig } from '../stores/configStore';
 import {
   setLayersTree,
   setSelectedLayerIds,
   clearAllWmsLayers,
-  clearExtraLayers,
-  addWmsLayer,
-  addExtraLayer,
   setMapView,
+  getMap,
 } from '../stores/mapStore';
-import { findNodeByNumber } from './layerTree';
-import { resolveChartOptions } from './charts';
+import { fetchCapabilitiesNode, toLayerNode } from './capabilities';
+import { getAllLeafNodes } from './layerTree';
 import {
   setSidebarContent,
   setSidebarOpen,
   openPanel,
 } from '../stores/uiStore';
-import L from 'leaflet';
 
-async function loadLayerTree(jsonpath: string): Promise<import('../stores/configStore').LayerNode[] | null> {
-  if (jsonpath.includes('Multi_DataTree.json') || !jsonpath) return null;
-  try {
-    const res = await fetch(`/config/${jsonpath}`);
-    return res.json();
-  } catch {
-    return null;
-  }
-}
+const PUDUCHERRY_CENTER: [number, number] = [11.91, 79.78];
 
-export async function handleMenuItemClick(itemName: string) {
-  const config = configState.menuitems[itemName];
-  if (!config) {
-    console.warn(`No config found for: ${itemName}`);
+export async function handleMenuItemClick(item: NavEntryConfig) {
+  // An external link instead of a real GeoServer layer.
+  if (item.link) {
+    window.open(item.link, '_blank');
     return;
   }
 
-  // Handle redirect-only items
-  if (config.otherfunctions?.name === 'redirectToServiceLinks') {
-    if (config.title.includes('INCOIS')) {
-      window.open('https://incois.gov.in/portal/stormsurge/webgis.jsp', '_blank');
-    }
-    return;
-  }
-
-  // Clear previous state
   clearAllWmsLayers();
-  clearExtraLayers();
 
-  // Resolve the layer tree
-  let tree = configState.allLayerInfo[config.key] ?? null;
-  if (!tree) {
-    const loaded = await loadLayerTree(config.jsonpath);
-    if (loaded) tree = loaded;
+  if (!item.layer) {
+    console.warn(`Nav item "${item.label}" has no layer configured`);
+    setSidebarContent({ title: item.label, chartOptions: [] });
+    setSidebarOpen(true);
+    return;
   }
 
-  if (tree) {
-    setLayersTree(tree);
+  const node = await fetchCapabilitiesNode(item.layer);
+  if (!node) {
+    console.warn(`GeoServer layer not found: ${item.layer}`);
+    setSidebarContent({ title: item.label, chartOptions: [] });
+    setSidebarOpen(true);
+    return;
   }
 
-  // Update map view
-  const center: [number, number] =
-    Array.isArray(config.center) && config.center.length === 2
-      ? config.center
-      : [11.91, 79.78];
-  setMapView(center, config.zoom ?? 12);
+  const tree = [toLayerNode(node)];
+  setLayersTree(tree);
 
-  // Pre-select configured layers
-  if (tree && config.data?.length) {
-    const idsToSelect = config.data.filter(id =>
-      findNodeByNumber(tree!, id) !== null,
-    );
-    setSelectedLayerIds(idsToSelect);
-    idsToSelect.forEach(id => {
-      const node = findNodeByNumber(tree!, id);
-      if (node?.service) addWmsLayer(id, node.service, node.Name);
-    });
-    openPanel('legend');
+  const map = getMap();
+  if (node.bounds && map) {
+    map.fitBounds(node.bounds);
+  } else {
+    setMapView(PUDUCHERRY_CENTER, 12);
   }
 
-  // Add buoy marker for water quality
-  if (config.otherfunctions?.name === 'loadWaterquality') {
-    const icon = L.icon({ iconUrl: '/img/buoy.png', iconSize: [45, 60] });
-    const marker = L.marker([11.919712, 79.846512], { icon });
-    marker.bindPopup('Puducherry Buoy');
-    addExtraLayer(marker);
-  }
+  // Select every real sublayer this feature has — MapContainer's
+  // layer-selection effect adds each as a WMS layer and tries to fetch its
+  // chart_data.
+  const idsToSelect = getAllLeafNodes(tree).filter(n => n.service).map(n => n.Number);
+  setSelectedLayerIds(idsToSelect);
+  openPanel('legend');
 
-  // Load charts
-  let chartOptions: import('echarts').EChartsOption[] = [];
-  if (config.otherfunctions?.name) {
-    chartOptions = await resolveChartOptions(config.otherfunctions.name, config.title);
-  }
-
-  // Update info sidebar
+  // Title/about come straight from this layer's own GetCapabilities
+  // Title/Abstract — there's no local per-item text to fall back to.
   setSidebarContent({
-    title: config.title,
-    chapterHeader: config.chapterheader,
-    subpara: config.subpara,
-    about: config.about,
-    chartOptions,
+    title: node.title,
+    about: node.abstract,
+    chartOptions: [],
   });
   setSidebarOpen(true);
 }

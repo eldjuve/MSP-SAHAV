@@ -1,23 +1,26 @@
-import { createSignal, For, Show } from 'solid-js';
-import { layersTree, selectedLayerIds, setSelectedLayerIds, zoomToLayer } from '../stores/mapStore';
+import { createSignal, createEffect, For, Show } from 'solid-js';
+import { layersTree, selectedLayerIds, setSelectedLayerIds } from '../stores/mapStore';
+import { zoomToLayer } from '../lib/capabilities';
 import { closePanel } from '../stores/uiStore';
 import { findNodeByNumber } from '../lib/layerTree';
 import type { LayerNode } from '../stores/configStore';
 
-function toggleId(id: string, checked: boolean, node: LayerNode) {
-  const allIds = getAllIds(node);
-  setSelectedLayerIds(prev => {
-    if (checked) {
-      const toAdd = allIds.filter(i => !prev.includes(i));
-      return [...prev, ...toAdd];
-    }
-    return prev.filter(i => !allIds.includes(i));
-  });
+// A group node is never itself added as a WMS layer (see toLayerNode) — only
+// its leaves are real, checkable layers, so a group's checked/indeterminate
+// state must be derived from its leaves rather than tracked as its own id.
+function leafIds(node: LayerNode): string[] {
+  return node.Children?.length ? node.Children.flatMap(leafIds) : [node.Number];
 }
 
-function getAllIds(node: LayerNode): string[] {
-  if (!node.Children?.length) return [node.Number];
-  return [node.Number, ...node.Children.flatMap(getAllIds)];
+function toggleNode(node: LayerNode, checked: boolean) {
+  const ids = leafIds(node);
+  setSelectedLayerIds(prev => {
+    if (checked) {
+      const toAdd = ids.filter(i => !prev.includes(i));
+      return [...prev, ...toAdd];
+    }
+    return prev.filter(i => !ids.includes(i));
+  });
 }
 
 function LayerItem(props: { node: LayerNode }) {
@@ -30,7 +33,7 @@ function LayerItem(props: { node: LayerNode }) {
           type="checkbox"
           id={props.node.Number}
           checked={checked()}
-          onChange={e => toggleId(props.node.Number, e.currentTarget.checked, props.node)}
+          onChange={e => toggleNode(props.node, e.currentTarget.checked)}
           class="cursor-pointer shrink-0"
         />
         <label for={props.node.Number} class="text-[#3f4346] text-xs truncate cursor-pointer">
@@ -52,17 +55,22 @@ function LayerItem(props: { node: LayerNode }) {
 
 function LayerGroup(props: { node: LayerNode }) {
   const [open, setOpen] = createSignal(true);
-  const checked = () => selectedLayerIds().includes(props.node.Number);
+  const ids = () => leafIds(props.node);
+  const checked = () => ids().every(id => selectedLayerIds().includes(id));
+  const indeterminate = () => !checked() && ids().some(id => selectedLayerIds().includes(id));
+  let checkboxEl!: HTMLInputElement;
+  createEffect(() => { checkboxEl.indeterminate = indeterminate(); });
 
   return (
     <div>
       <div class="flex justify-between items-center px-2.5 py-2.5 bg-[#258ccc] text-white cursor-pointer mb-1 hover:bg-[#0056b3] transition-colors">
         <div class="flex items-center gap-2">
           <input
+            ref={checkboxEl}
             type="checkbox"
             id={props.node.Number}
             checked={checked()}
-            onChange={e => toggleId(props.node.Number, e.currentTarget.checked, props.node)}
+            onChange={e => toggleNode(props.node, e.currentTarget.checked)}
             class="cursor-pointer"
             onClick={e => e.stopPropagation()}
           />
