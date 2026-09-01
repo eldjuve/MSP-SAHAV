@@ -20,9 +20,8 @@ DS="mspudhu_postgis"
 #    Use" (recovered from the old app's hardcoded Multi_DataTree.json,
 #    since neither GeoServer's default nor the live server has anything
 #    better for these).
-# 2. layer-titles.tsv — fetched from the live production server
-#    (scripts/fetch-titles.py) for layers where it already has a genuinely
-#    more descriptive title set.
+# 2. layer-titles.tsv — fetched from the live production server for layers
+#    where it already has a genuinely more descriptive title set.
 # 3. Otherwise, mechanically reformat the raw name ("_" -> " ") — not as
 #    good as a real title, but better than showing raw_underscored_names.
 title_for() {

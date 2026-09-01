@@ -1,9 +1,9 @@
 #!/bin/bash
 # Uploads every SLD in ../styles/ (fetched from the live production
-# GeoServer by fetch-styles.py — real cartography: green mangroves,
-# transparent-fill district boundaries, etc.) as a style in the MSPudhu
-# workspace, then sets each published layer's default style per
-# ../layer-style-map.tsv. Run after publish-layers.sh.
+# GeoServer — real cartography: green mangroves, transparent-fill district
+# boundaries, etc.) as a style in the MSPudhu workspace, then sets each
+# published layer's default style per ../layer-style-map.tsv. Run after
+# publish-layers.sh.
 set -e
 cd "$(dirname "$0")/.."
 
@@ -26,17 +26,17 @@ for icon in styles/icons/*; do
 done
 
 echo "== uploading styles =="
-# These SLDs are fetched verbatim from the live production GeoServer
-# (fetch-styles.py) and reference this demo's columns under their original
-# production names, which don't match how this pipeline actually creates
-# them: ogr2ogr launders every column name to lowercase on import (e.g.
-# "Class" -> "class", "GEOMORPHOL" -> "geomorphol"), and load-data.sh always
-# names the geometry column "geom" regardless of its original shapefile-era
-# name ("the_geom"). An unmodified upload makes GetMap fail with "attribute
-# not found" for any style that filters/labels/transforms by attribute or
+# These SLDs are fetched verbatim from the live production GeoServer and
+# reference this demo's columns under their original production names,
+# which don't match how this pipeline actually creates them: ogr2ogr
+# launders every column name to lowercase on import (e.g. "Class" ->
+# "class", "GEOMORPHOL" -> "geomorphol"), and load-data.sh always names the
+# geometry column "geom" regardless of its original shapefile-era name
+# ("the_geom"). An unmodified upload makes GetMap fail with "attribute not
+# found" for any style that filters/labels/transforms by attribute or
 # explicitly references the geometry column. Fix both up at upload time
-# rather than editing the committed SLDs, so re-running fetch-styles.py
-# doesn't need to re-apply this fixup.
+# rather than editing the committed SLDs, so refreshing them from the live
+# server again wouldn't need this fixup reapplied.
 for sld in styles/*.sld; do
   style_name=$(basename "$sld" .sld)
   normalized="/tmp/style-normalized-$style_name.sld"

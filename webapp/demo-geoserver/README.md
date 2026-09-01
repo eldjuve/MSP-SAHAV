@@ -4,7 +4,7 @@ A local GeoServer + PostGIS stack for demoing this app without touching the
 real production GeoServer. It's seeded with the real Puducherry MSP data
 (pulled from the live public instance at
 [marinespatialplanning.in/puducherrygeo](https://marinespatialplanning.in/puducherrygeo),
-workspace `MSPudhu`, and committed under `data/` — see `scripts/fetch-data.sh`),
+workspace `MSPudhu`, and committed under `data/`),
 scoped down to the ~79 layers `public/config/nav.json`
 can reach, organized into the layer groups it expects (see
 `../GEOSERVER_CHANGES.md`'s "Layer groups to create" table), styled with the
@@ -39,16 +39,24 @@ GeoServer admin UI: http://localhost:8080/geoserver (admin / geoserver).
 |---|---|
 | `docker-compose.yml` | postgis (port 55432 on the host) + geoserver 2.25 (kartoza/geoserver, port 8080) |
 | `scripts/init-geoserver.sh` | creates the `MSPudhu` workspace and a `mspudhu_postgis` PostGIS datastore |
-| `scripts/fetch-data.sh` | **maintenance only, not run by `setup.sh`.** Downloads WFS GeoJSON for every layer in `referenced_local_names.txt` from the live production GeoServer into `data/*.json`. Only needs re-running if the live server's data changes or a new layer is added — the fetched output is committed, so normal setup doesn't depend on the live server for this |
 | `scripts/load-data.sh` | imports each downloaded GeoJSON into PostGIS via a throwaway `ogr2ogr` container (no local GDAL install needed) |
 | `scripts/publish-layers.sh` | publishes each loaded table as a GeoServer layer, using the exact mixed-case layer name the frontend expects as the exposed name (`ogr2ogr` lowercases table names on import; `nativeName` maps back to the real table), and sets each layer's `Title` — the label the frontend actually displays — from `layer-title-overrides.tsv`, then `layer-titles.tsv`, then a `"_"` -> `" "` reformat of the raw name |
-| `scripts/fetch-titles.py` | **maintenance only, not run by `setup.sh`.** Re-fetches every layer's `Title` from the live production GeoServer into `layer-titles.tsv`, for layers where the live title is actually more descriptive than the raw name. `layer-title-overrides.tsv` is hand-curated instead (not fetched) — it's for the layers where nobody, live server included, ever set a real title (e.g. `LULC_Pondy` -> "Land Use", recovered from the old app's removed `Multi_DataTree.json`) |
 | `scripts/create-layer-groups.sh` | creates every layer group `public/config/nav.json` references (bundles like `Boundaries`, plus the nested `Environment`/`Ecology`/`Human_Activities`/`Socio_Economic`/`DataRepository` groups), each with a `Title`/`Abstract` — that's what the sidebar shows when a group is selected, since there's no local text to fall back to |
-| `scripts/fetch-styles.py` | **maintenance only, not run by `setup.sh`.** Re-fetches every layer's real SLD style from the live production GeoServer into `styles/*.sld` + `layer-style-map.tsv`. Only needs re-running if the live server's styles change or a new layer is added — the fetched output is committed, so normal setup doesn't depend on the live server for this |
 | `scripts/apply-styles.sh` | uploads every `styles/*.sld` to the local GeoServer and sets each layer's default style per `layer-style-map.tsv`, so the demo looks like the real site (green mangroves, transparent-fill boundaries, etc.) instead of GeoServer's generic gray default |
 | `scripts/chartdata.py` | generates the demo `MSPudhu:ChartData` rows + `CREATE TABLE`/`INSERT` SQL, matching the `ChartBundle`/`ChartSpec` shapes in `../src/lib/geoserver.ts` |
 | `scripts/seed-chartdata.sh` | runs `chartdata.py`, loads it into Postgres, and publishes `MSPudhu:ChartData` |
 | `scripts/setup.sh` | runs all of the above in order |
+
+`data/*.json`, `styles/*.sld` + `layer-style-map.tsv`, and `layer-titles.tsv`
+were pulled from the live production GeoServer by one-off `fetch-*` scripts
+(`fetch-data.sh`, `fetch-styles.py`, `fetch-titles.py`) that are no longer
+in the repo — their output is committed and that's all `setup.sh` needs, so
+they were deleted rather than kept around unused. To refresh any of these
+from the live server again, recover the script from git history, e.g.:
+```
+git log --oneline --diff-filter=D -- webapp/demo-geoserver/scripts/fetch-data.sh
+git show <that commit>^:webapp/demo-geoserver/scripts/fetch-data.sh > scripts/fetch-data.sh
+```
 
 `referenced_local_names.txt` is every distinct layer name (workspace prefix
 stripped) that `create-layer-groups.sh`'s bundles reference — i.e. every
@@ -62,8 +70,9 @@ fix the member name or drop it from that group's member list in the script.
 ## Notes / gotchas
 
 - `demo-geoserver/data/` (downloaded GeoJSON, ~80MB) is committed, like
-  `styles/` and `layer-titles.tsv` — re-run `scripts/fetch-data.sh` to
-  refresh it from the live server.
+  `styles/` and `layer-titles.tsv` — see the note below the script table for
+  how to refresh it from the live server (the fetch script isn't in the
+  repo any more).
 - Leaflet's `L.tileLayer.wms` (used in `mapStore.ts`) defaults to WMS
   **1.1.1**, which uses lon/lat axis order for EPSG:4326. If you're
   poking the GeoServer WMS endpoint directly with `curl`, match that
