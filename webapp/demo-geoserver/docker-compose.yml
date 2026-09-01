@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: mspudhu-demo-db
+    environment:
+      POSTGRES_DB: mspudhu
+      POSTGRES_USER: mspudhu
+      POSTGRES_PASSWORD: mspudhu
+    ports:
+      - "55432:5432"
+    volumes:
+      - mspudhu_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mspudhu -d mspudhu"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  geoserver:
+    image: kartoza/geoserver:2.25.2
+    container_name: mspudhu-demo-geoserver
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      GEOSERVER_ADMIN_USER: admin
+      GEOSERVER_ADMIN_PASSWORD: geoserver
+      GEOSERVER_DATA_DIR: /opt/geoserver/data_dir
+      INITIAL_MEMORY: 512M
+      MAXIMUM_MEMORY: 1G
+      EXISTING_DATA_DIR: "false"
+    ports:
+      - "8080:8080"
+    volumes:
+      - mspudhu_gs_data:/opt/geoserver/data_dir
+
+volumes:
+  mspudhu_db_data:
+  mspudhu_gs_data:

@@ -1,0 +1,20 @@
+# Hand-curated layer titles, highest priority — checked before
+# layer-titles.tsv (fetched from the live server) and before
+# publish-layers.sh's own "_" -> " " fallback.
+#
+# Recovered from the old app's Multi_DataTree.json (removed by the
+# solidjs-rewrite — see GEOSERVER_CHANGES.md), which named a layer once per
+# place it appeared in the old hardcoded menu tree. That file's names aren't
+# reproduced verbatim here — only the entries that are a genuine editorial
+# choice (not just "_" replaced with " ", which the fallback already
+# handles) and aren't superseded by a real title on the live server.
+LULC_Pondy	Land Use
+Geomorphology_Clipped	Geomorphology
+Mangroves_2022	Mangroves
+CIRA_PY_final	Vulnerability
+River	Rivers
+VillageBoundary	Village Boundaries
+# Not from Multi_DataTree.json — these two are plain camelCase with no "_"
+# for the fallback to split on, so they'd otherwise show unspaced.
+VillageNames	Village Names
+SandSpit	Sand Spit
