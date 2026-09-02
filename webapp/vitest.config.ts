@@ -7,5 +7,8 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     environment: 'jsdom',
+    // e2e/ holds @playwright/test specs, not vitest ones — they use an
+    // incompatible `test()`/fixture model and must never be collected here.
+    exclude: ['**/node_modules/**', '**/dist/**', 'e2e/**'],
   },
 });
