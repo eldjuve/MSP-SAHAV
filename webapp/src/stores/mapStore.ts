@@ -34,10 +34,17 @@ const _addedLayers: Record<string, L.TileLayer.WMS> = {};
 export function getMap() { return _map; }
 
 const BASEMAP_TILES: Record<BasemapType, () => L.TileLayer> = {
+  // Pulls Google's raw tile server directly rather than through the
+  // official Maps JS API/embed — outside Google's terms of service for
+  // programmatic tile access (inherited from the pre-rewrite app, not
+  // introduced here). Attributed regardless; swap for a licensed satellite
+  // source (Esri's World_Imagery is already used below for "imagery") if
+  // this app is ever meant for production use beyond an internal demo.
   satellite: () =>
     L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
       maxZoom: 22,
       subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+      attribution: '&copy; Google',
     }),
   imagery: () =>
     L.tileLayer(

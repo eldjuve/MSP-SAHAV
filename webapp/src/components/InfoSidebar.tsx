@@ -1,6 +1,7 @@
 import { For, Show } from 'solid-js';
 import { sidebarOpen, setSidebarOpen, mainContent, chartReportOptions, selectedChartIndex, setSelectedChartIndex } from '../stores/uiStore';
 import { ChartContainer } from './ChartContainer';
+import { sanitizeHtml } from '../lib/sanitize';
 
 export function InfoSidebar() {
   const selectedReport = () =>
@@ -45,10 +46,10 @@ export function InfoSidebar() {
             {main => (
               <div class="text-xs text-justify leading-relaxed">
                 <Show when={main().subpara}>
-                  <p class="mb-2" innerHTML={main().subpara} />
+                  <p class="mb-2" innerHTML={sanitizeHtml(main().subpara!)} />
                 </Show>
                 <Show when={main().about}>
-                  <p class="mb-4" innerHTML={main().about} />
+                  <p class="mb-4" innerHTML={sanitizeHtml(main().about!)} />
                 </Show>
               </div>
             )}
@@ -73,10 +74,10 @@ export function InfoSidebar() {
                   <p class="font-semibold text-sm mb-2">{r().chapterHeader}</p>
                 </Show>
                 <Show when={r().subpara}>
-                  <p class="mb-2" innerHTML={r().subpara} />
+                  <p class="mb-2" innerHTML={sanitizeHtml(r().subpara!)} />
                 </Show>
                 <Show when={r().about}>
-                  <p class="mb-4" innerHTML={r().about} />
+                  <p class="mb-4" innerHTML={sanitizeHtml(r().about!)} />
                 </Show>
                 <Show when={r().chartOptions?.length}>
                   <For each={r().chartOptions}>
