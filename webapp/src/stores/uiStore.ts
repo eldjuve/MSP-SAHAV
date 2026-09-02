@@ -21,6 +21,12 @@ export interface ChartReportContent extends SidebarContent {
 export const [activePanel, setActivePanel] = createSignal<ActivePanel>(null);
 export const [sidebarOpen, setSidebarOpen] = createSignal(false);
 
+// True while a nav click's GetCapabilities fetch is in flight — see
+// menuHandler.ts and App.tsx's loading bar. Nothing else in the UI changes
+// the instant you click a nav item, so without this a slow/cold GeoServer
+// request just looks like the click did nothing.
+export const [navLoading, setNavLoading] = createSignal(false);
+
 // The current menu item's own static text, if it has any (some menu items
 // exist purely to select a map feature and have none). Always shown above
 // the chart picker, never itself an option in it.

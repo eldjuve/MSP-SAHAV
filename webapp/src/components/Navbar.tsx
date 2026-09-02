@@ -1,8 +1,9 @@
 import { For, Show } from 'solid-js';
 import { DropdownMenu } from '@kobalte/core/dropdown-menu';
 import { createSignal } from 'solid-js';
-import { configState } from '../stores/configStore';
+import { navConfig } from '../stores/configStore';
 import { handleMenuItemClick } from '../lib/menuHandler';
+import { navLoading } from '../stores/uiStore';
 import type { NavEntryConfig } from '../stores/configStore';
 
 const NAV_ITEMS = [
@@ -70,7 +71,7 @@ export function Navbar() {
         >
           <For each={NAV_ITEMS}>
             {nav => {
-              const menuData = () => nav.key ? configState.nav[nav.key] : null;
+              const menuData = () => nav.key ? navConfig()?.[nav.key] : null;
               const hasMenu = () => !!menuData()?.length;
 
               return (
@@ -106,6 +107,12 @@ export function Navbar() {
           </For>
         </ul>
       </div>
+      {/* Covers both the initial nav.json + GetCapabilities discovery
+          (navConfig.loading) and a single nav click's fetch (navLoading) —
+          absolutely positioned so it never shifts layout when it appears. */}
+      <Show when={navLoading() || navConfig.loading}>
+        <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 animate-pulse" />
+      </Show>
     </nav>
   );
 }

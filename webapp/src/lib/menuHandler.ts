@@ -12,6 +12,7 @@ import {
   setSidebarContent,
   setSidebarOpen,
   openPanel,
+  setNavLoading,
 } from '../stores/uiStore';
 
 const PUDUCHERRY_CENTER: [number, number] = [11.91, 79.78];
@@ -24,6 +25,9 @@ let requestId = 0;
 export async function handleMenuItemClick(item: NavEntryConfig) {
   const thisRequest = ++requestId;
   clearAllWmsLayers();
+  // A new click always supersedes whatever the previous one was doing —
+  // reset first, so a stale spinner from a superseded click never lingers.
+  setNavLoading(false);
 
   if (!item.layer) {
     console.warn(`Nav item "${item.label}" has no layer configured`);
@@ -32,8 +36,10 @@ export async function handleMenuItemClick(item: NavEntryConfig) {
     return;
   }
 
+  setNavLoading(true);
   const node = await fetchCapabilitiesNode(item.layer);
-  if (thisRequest !== requestId) return;
+  if (thisRequest !== requestId) return; // a newer click already owns navLoading
+  setNavLoading(false);
   if (!node) {
     console.warn(`GeoServer layer not found: ${item.layer}`);
     setSidebarContent({ title: item.label, chartOptions: [] });

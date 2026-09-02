@@ -1,4 +1,4 @@
-import { createStore } from 'solid-js/store';
+import { createResource, createEffect } from 'solid-js';
 import { fetchCapabilitiesNode } from '../lib/capabilities';
 
 export interface LayerNode {
@@ -31,16 +31,6 @@ export interface NavRootConfig {
 export type NavFile = Record<string, NavRootConfig>;
 export type NavConfig = Record<string, NavEntryConfig[]>;
 
-interface ConfigState {
-  nav: NavConfig;
-  loaded: boolean;
-}
-
-export const [configState, setConfigState] = createStore<ConfigState>({
-  nav: {},
-  loaded: false,
-});
-
 async function discoverChildren(layer: string, submenus: Set<string>): Promise<NavEntryConfig[]> {
   const node = await fetchCapabilitiesNode(layer);
   if (!node?.children.length) return [];
@@ -50,11 +40,20 @@ async function discoverChildren(layer: string, submenus: Set<string>): Promise<N
   }));
 }
 
-export async function loadAllConfig() {
+async function fetchNavConfig(): Promise<NavConfig> {
   const rawNav: NavFile = await fetch('/config/nav.json').then(r => r.json());
   const nav: NavConfig = {};
   await Promise.all(Object.entries(rawNav).map(async ([key, root]) => {
     nav[key] = await discoverChildren(root.layer, new Set(root.submenus));
   }));
-  setConfigState({ nav, loaded: true });
+  return nav;
 }
+
+// The app's nav tree, discovered once from GeoServer at startup — fetches
+// as soon as this module is first imported (see index.tsx). `navConfig.loading`
+// drives App.tsx's startup loading bar; Navbar.tsx reads `navConfig()` directly.
+export const [navConfig] = createResource(fetchNavConfig);
+
+createEffect(() => {
+  if (navConfig.error) console.error('Failed to load nav config', navConfig.error);
+});
