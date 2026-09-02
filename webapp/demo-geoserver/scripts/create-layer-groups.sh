@@ -163,7 +163,7 @@ echo "== top nav anchors =="
 
 create_group "StatusIndicators" "Status Indicators" \
   "Status indicator layers for the Puducherry region." \
-  "layer:Marine_Outfall"
+  "layer:Marine_Outfall" "layer:WaterQuality_Buoy"
 
 create_group "Conflicts" "Conflicts & Compatibilities" \
   "Conflicts between marine spatial planning activities in the Puducherry region." \

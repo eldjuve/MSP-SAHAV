@@ -1,0 +1,10 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "Water Quality", "buoy_id": "16600" },
+      "geometry": { "type": "Point", "coordinates": [79.846512, 11.919712] }
+    }
+  ]
+}

@@ -11,7 +11,7 @@
                     <PointSymbolizer>
                         <Graphic>
                             <ExternalGraphic>
-                                <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/rest/resource/workspaces/MSPudhu/styles/fire_station.svg" />
+                                <OnlineResource xlink:type="simple" xlink:href="fire_station.svg" />
                                 <Format>image/svg+xml</Format>
                             </ExternalGraphic>
                             <Mark>

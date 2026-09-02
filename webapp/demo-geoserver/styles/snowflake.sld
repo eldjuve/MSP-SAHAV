@@ -11,11 +11,11 @@
                     <PointSymbolizer>
                         <Graphic>
                             <ExternalGraphic>
-                                <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/rest/resource/workspaces/MSPudhu/styles/snowflake.svg" />
+                                <OnlineResource xlink:type="simple" xlink:href="snowflake.svg" />
                                 <Format>image/svg+xml</Format>
                             </ExternalGraphic>
                             <ExternalGraphic>
-                                <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/rest/resource/workspaces/MSPudhu/styles/snowflake.svg" />
+                                <OnlineResource xlink:type="simple" xlink:href="snowflake.svg" />
                                 <Format>image/svg+xml</Format>
                             </ExternalGraphic>
                             <Mark>

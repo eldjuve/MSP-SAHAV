@@ -10,9 +10,11 @@ has been removed.
 
 Three things must happen on the GeoServer side before the app works:
 
-1. **Set the real server URL.** `GEOSERVER_URL` in `src/stores/mapStore.ts`
-   is still the placeholder `https://yourdomain.in/geoserver/MSPudhu/wms`
-   inherited from the original app.
+1. **Set the real server URL.** `GEOSERVER_BASE_URL` in
+   `src/stores/mapStore.ts` (override via `VITE_GEOSERVER_URL`) is still the
+   placeholder `https://yourdomain.in/geoserver` inherited from the original
+   app. It's a bare base URL with no workspace — each layer's own workspace
+   (from its `workspace:name` qualifier) is appended per-request.
 2. **Publish the layer groups `nav.json` references** (see below) in the
    `MSPudhu` workspace, each with a `Title` and (ideally) an `Abstract` set,
    since those become the sidebar heading/body text directly — there's no
@@ -69,15 +71,22 @@ exactly what a GeoServer layer group is for.
 
 **The water-quality buoy is a real point feature, not frontend
 decoration.** The old app drew it as a static Leaflet marker with a
-hardcoded lat/lng and a custom icon. Instead, publish it as an actual
-GeoServer point layer (real coordinates, in the same PostGIS store as
-everything else) styled via SLD with an `<ExternalGraphic>` pointing at the
-buoy icon in place of a default point symbol — that's a standard WMS/SLD
-pattern. Add it to `MSPudhu:District_Boundary` (or its own small group) and
-it renders automatically whenever that feature is selected, with no
-frontend code at all. The one thing this drops versus before is the
-marker's click-to-popup — that would need `GetFeatureInfo` support, which
-this app doesn't have for any layer yet, buoy or otherwise.
+hardcoded lat/lng ([11.919712, 79.846512] — `addBuoys()` in the old
+`callbacks.js`) and a custom icon (`img/buoy.png`). It's now published as
+an actual GeoServer point layer, `MSPudhu:WaterQuality_Buoy` (real
+coordinates, in the same PostGIS store as everything else), styled via SLD
+with an `<ExternalGraphic>` (the recovered `buoy.png`, self-hosted next to
+the style — see `demo-geoserver/styles/buoy.sld` and its README's
+`xlink:href` note) in place of a default point symbol, and added as a
+member of the `StatusIndicators` group so it renders automatically
+whenever "Status Indicators" is selected, with no frontend code at all. Its
+`chart_data` (the DO/DIN/DIP/Chlorophyll charts) is keyed off this layer's
+own name, not `District_Boundary`'s — the whole point of moving it here is
+that those measurements come from the buoy, not from the district as a
+whole (see `demo-geoserver/scripts/chartdata.py`'s `water_quality_buoy`
+row). The one thing this drops versus before is the marker's click-to-popup
+— that would need `GetFeatureInfo` support, which this app doesn't have for
+any layer yet, buoy or otherwise.
 
 ### Layer groups to create, with proposed names
 

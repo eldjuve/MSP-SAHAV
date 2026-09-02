@@ -13,7 +13,7 @@
                     <PointSymbolizer>
                         <Graphic>
                             <ExternalGraphic>
-                                <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/rest/resource/workspaces/MSPudhu/styles/hazard_flag.svg" />
+                                <OnlineResource xlink:type="simple" xlink:href="hazard_flag.svg" />
                                 <Format>image/svg+xml</Format>
                             </ExternalGraphic>
                             <Size>20</Size>

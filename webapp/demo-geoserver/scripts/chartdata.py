@@ -49,7 +49,7 @@ def wq_scatter(title, y_label, base, spread):
     }
 
 
-district_boundary = [
+water_quality_buoy = [
     {
         "title": "Water Quality",
         "chapterHeader": "Water Quality",
@@ -62,10 +62,13 @@ district_boundary = [
             wq_scatter("Chlorophyll", "mg/m³", 2.1, 0.9),
         ],
     },
+]
+
+district_boundary = [
     {
         "title": "Weather Parameters",
-        "chapterHeader": "Water Quality",
-        "subpara": "Weather parameters recorded alongside water-quality monitoring",
+        "chapterHeader": "Weather",
+        "subpara": "Weather parameters for the Puducherry region",
         "about": "Demo weather-parameter distributions by year.<br/><br/>Source: NCCR (demo data)",
         "charts": [
             weather_boxplot("Precipitation", "Year", "mm", 120, 60),
@@ -113,6 +116,9 @@ marine_outfall = [
 rows = {
     "District_Boundary": {"chart_data": district_boundary, "lon": 79.83, "lat": 11.94},
     "Marine_Outfall": {"chart_data": marine_outfall, "lon": 79.86, "lat": 11.95},
+    # Real buoy coordinates recovered from the old app's addBuoys() (Leaflet
+    # marker at [11.919712, 79.846512] — see GEOSERVER_CHANGES.md).
+    "WaterQuality_Buoy": {"chart_data": water_quality_buoy, "lon": 79.846512, "lat": 11.919712},
 }
 
 

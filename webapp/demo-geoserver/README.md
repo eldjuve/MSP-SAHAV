@@ -9,10 +9,28 @@ scoped down to the ~79 layers `public/config/nav.json`
 can reach, organized into the layer groups it expects (see
 `../GEOSERVER_CHANGES.md`'s "Layer groups to create" table), styled with the
 same real SLD cartography the production site uses (green mangroves,
-transparent-fill district boundaries, etc. — see `styles/`), plus a demo
-`MSPudhu:ChartData` table so the Water Quality / Marine Pollution chart
-panels have something to show. Chart values are synthetic demo data, not
-real measurements.
+transparent-fill district boundaries, custom point icons — see `styles/`),
+plus a `WaterQuality_Buoy` point layer (recreating the old app's static
+buoy marker as a real GeoServer feature, custom icon included — see
+`../GEOSERVER_CHANGES.md`) and a demo `MSPudhu:ChartData` table so the
+Water Quality / Marine Pollution / Weather chart panels have something to
+show. Chart values are synthetic demo data, not real measurements.
+
+It also seeds a second workspace, `MSPLak`, with a single real Lakshadweep
+district boundary polygon (`data/Lakshadweep_District_Boundary.json`, from
+[geoBoundaries](https://www.geoboundaries.org)'s open India ADM2 dataset,
+CC BY 4.0 — attribute geoBoundaries if this data is reused elsewhere) —
+see `scripts/setup-lakshadweep.sh` — plus a `MSPLak:ChartData` Weather
+Parameters bundle for that boundary, built from **real** 2018-2023 daily
+weather observations for Kavaratti, Lakshadweep, via
+[Open-Meteo](https://open-meteo.com)'s historical archive API (ERA5/ERA5-Land
+reanalysis, Copernicus Climate Change Service, CC BY 4.0) — see
+`scripts/lakshadweep-chartdata.py`. Unlike `MSPudhu:ChartData`, these
+values aren't synthetic. It's all there purely to demonstrate that
+`nav.json` and the frontend's per-layer workspace resolution (see
+`../GEOSERVER_CHANGES.md`) support more than one GeoServer workspace; it
+shows up in the app's top nav as "Lakshadweep (demo)"
+(`../src/components/Navbar.tsx`), not part of the real site's menu.
 
 ## Quick start
 
@@ -27,9 +45,8 @@ is otherwise idempotent-ish: it'll re-create/re-publish GeoServer resources
 on a re-run (existing ones just fail harmlessly and are reported as
 already-exists).
 
-Once it's up, `src/stores/mapStore.ts`'s `GEOSERVER_URL` already points at
-`http://localhost:8080/geoserver/MSPudhu/wms` — just run the app's dev
-server as usual.
+Once it's up, `.env.local`'s `VITE_GEOSERVER_URL` already points at
+`http://localhost:8080/geoserver` — just run the app's dev server as usual.
 
 GeoServer admin UI: http://localhost:8080/geoserver (admin / geoserver).
 
@@ -45,6 +62,8 @@ GeoServer admin UI: http://localhost:8080/geoserver (admin / geoserver).
 | `scripts/apply-styles.sh` | uploads every `styles/*.sld` to the local GeoServer and sets each layer's default style per `layer-style-map.tsv`, so the demo looks like the real site (green mangroves, transparent-fill boundaries, etc.) instead of GeoServer's generic gray default |
 | `scripts/chartdata.py` | generates the demo `MSPudhu:ChartData` rows + `CREATE TABLE`/`INSERT` SQL, matching the `ChartBundle`/`ChartSpec` shapes in `../src/lib/geoserver.ts` |
 | `scripts/seed-chartdata.sh` | runs `chartdata.py`, loads it into Postgres, and publishes `MSPudhu:ChartData` |
+| `scripts/setup-lakshadweep.sh` | provisions a second demo workspace, `MSPLak`, from a single real Lakshadweep district boundary polygon (`data/Lakshadweep_District_Boundary.json`) — proves `public/config/nav.json` can span more than one GeoServer workspace, since every layer/WMS/WFS lookup in the frontend already resolves its workspace per-layer (see `wmsUrlForWorkspace`/`wfsUrlForWorkspace` in `../src/stores/mapStore.ts`). Reuses the same Postgres database as `MSPudhu` (a second workspace/datastore pointing at the same db is normal) and the generic `load-data.sh`. No `ChartData` table for this workspace, so the InfoSidebar's chart fetch for it 400s harmlessly (already handled — `fetchFeatureCharts` returns `[]` on a failed request) |
+| `scripts/seed-lakshadweep-chartdata.sh` | runs `lakshadweep-chartdata.py`, loads it into Postgres, and publishes `MSPLak:ChartData` — a Weather Parameters bundle for `District_Boundary`, built from **real** historical weather observations (Open-Meteo's archive API, ERA5/ERA5-Land reanalysis), unlike `MSPudhu:ChartData`'s synthetic values. This is the one step in `setup.sh` that needs internet access |
 | `scripts/setup.sh` | runs all of the above in order |
 
 `data/*.json`, `styles/*.sld` + `layer-style-map.tsv`, and `layer-titles.tsv`
@@ -97,10 +116,25 @@ fix the member name or drop it from that group's member list in the script.
   an NPE (`DefaultResourceLocator.locateResource`) on *upload*, not just at
   render time. Fixed by re-pointing each at a same-licensed (Apache 2.0)
   [Material Symbols](https://github.com/google/material-design-icons) icon,
-  self-hosted via GeoServer's own resource API
-  (`/rest/resource/workspaces/MSPudhu/styles/*.svg` — see `styles/icons/`)
-  so rendering has no external dependency, and renaming `ns1` to `xlink`
-  throughout. The fixed `.sld` files are committed, so this doesn't recur
+  self-hosted alongside the style (`styles/icons/*.svg`, uploaded to each
+  style's own resource dir by `apply-styles.sh`'s icon loop) and referenced
+  by a **relative** `xlink:href` (just the filename, e.g. `bank.svg`), and
+  renaming `ns1` to `xlink` throughout. The fixed `.sld` files are
+  committed, so this doesn't recur — but see the next note, this wasn't
+  quite right the first time either.
+- **A relative `xlink:href` is required, not an absolute
+  `/rest/resource/...` URL.** The 6 icon styles above (plus `buoy`, added
+  later) originally pointed `xlink:href` at the icon's absolute REST URL
+  (`http://localhost:8080/geoserver/rest/resource/workspaces/MSPudhu/styles/*.svg`).
+  That *uploads* fine and GeoServer never logs an error, but at render time
+  it silently falls back to the style's plain `<Mark>` (a colored square) —
+  `/rest/resource/**` requires HTTP Basic auth (confirmed: `curl` without
+  credentials gets a 401), and GeoServer's own `ExternalGraphic` fetcher
+  doesn't send any. A bare relative filename skips the HTTP round-trip
+  entirely (resolved straight from the style's resource directory), so it
+  isn't affected. Always verify a new icon style by actually rendering a
+  `GetMap` tile and looking at the pixels — an `HTTP 200`/`201` on style
+  upload only proves the XML parsed, not that the icon shows up.
   on a fresh `apply-styles.sh` run.
 - **Every style's `fill-opacity`/`stroke-opacity` was set to `0.7`/`1`**
   (translucent fills, crisp outlines — see `../GEOSERVER_CHANGES.md`'s

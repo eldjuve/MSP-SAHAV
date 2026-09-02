@@ -38,4 +38,10 @@ bash scripts/apply-styles.sh
 echo "==> seeding demo ChartData"
 bash scripts/seed-chartdata.sh
 
+echo "==> provisioning second demo workspace (MSPLak / Lakshadweep)"
+bash scripts/setup-lakshadweep.sh
+
+echo "==> seeding Lakshadweep ChartData (real weather data, needs internet)"
+bash scripts/seed-lakshadweep-chartdata.sh
+
 echo "==> done. GeoServer: http://localhost:8080/geoserver ; WMS base: http://localhost:8080/geoserver/MSPudhu/wms"

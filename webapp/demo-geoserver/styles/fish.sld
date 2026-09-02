@@ -12,7 +12,7 @@
                     <PointSymbolizer>
                         <Graphic>
                             <ExternalGraphic>
-                                <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/rest/resource/workspaces/MSPudhu/styles/fish.svg" />
+                                <OnlineResource xlink:type="simple" xlink:href="fish.svg" />
                                 <Format>image/png</Format>
                             </ExternalGraphic>
                             <Size>12</Size>

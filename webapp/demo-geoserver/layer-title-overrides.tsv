@@ -22,3 +22,7 @@ SandSpit	Sand Spit
 # for this layer is editorially "Marine Pollution", not the outfall's own
 # name, now that it's discovered via the StatusIndicators group.
 Marine_Outfall	Marine Pollution
+# Not from Multi_DataTree.json either — a new point layer recreating the old
+# app's static buoy marker as a real GeoServer feature (see
+# GEOSERVER_CHANGES.md's "water-quality buoy" section and chartdata.py).
+WaterQuality_Buoy	Water Quality
