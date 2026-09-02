@@ -3,7 +3,7 @@
 # the workspace/datastore, loads the committed demo data (data/*.json,
 # already fetched from the live marinespatialplanning.in GeoServer and
 # committed) into PostGIS, publishes every layer, creates the layer groups
-# public/config/nav.json expects, applies the real cartographic styles
+# the frontend's nav config expects, applies the real cartographic styles
 # (styles/*.sld, already fetched from the live server and committed), and
 # seeds the demo ChartData table. See ../README.md.
 set -e

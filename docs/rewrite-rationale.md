@@ -17,9 +17,11 @@ and configurability, not a cosmetic refresh:
   reorganizing a single dataset meant a frontend code change and redeploy.
   The app now discovers its nav tree, layer groups, titles, descriptions,
   and legends from GeoServer's own `GetCapabilities` at runtime — see
-  `docs/Technical/data_formats.md`. `public/config/nav.json` is the only
-  config file left, and it holds nothing but nav labels and which GeoServer
-  group each one points at.
+  `docs/Technical/data_formats.md`. The only config left is a small nav
+  config (baked in at build time, optionally overridden per deployment via
+  the `VITE_NAV_CONFIG` env var — see `docs/Technical/menu_configuration.md`),
+  holding nothing but nav labels and which GeoServer group each one points
+  at.
 
 - **Content changes without a frontend deploy.** Because nav structure,
   layer titles/descriptions, and chart content all live in GeoServer, adding
@@ -29,10 +31,10 @@ and configurability, not a cosmetic refresh:
 
 - **Open to new data and regions with no frontend change.** Since the app
   resolves each layer's GeoServer workspace per-request rather than
-  assuming one fixed workspace, `nav.json` can span multiple GeoServer
+  assuming one fixed workspace, the nav config can span multiple GeoServer
   workspaces — the `demo-geoserver` stack's second `MSPLak` (Lakshadweep)
   workspace demonstrates a second region being added purely as GeoServer
-  content, with one new `nav.json` entry and zero other frontend changes.
+  content, with one new nav config entry and zero other frontend changes.
 
 - **A reproducible local environment.** `demo-geoserver/` provides a
   GeoServer + PostGIS stack via Docker Compose, seeded with real Puducherry

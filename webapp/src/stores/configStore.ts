@@ -31,6 +31,31 @@ export interface NavRootConfig {
 export type NavFile = Record<string, NavRootConfig>;
 export type NavConfig = Record<string, NavEntryConfig[]>;
 
+// The default nav config, baked in at build time. Override via
+// VITE_NAV_CONFIG (a JSON string matching NavFile — see .env.example) to
+// ship a different nav tree without a source change, the same way
+// VITE_GEOSERVER_URL overrides GEOSERVER_BASE_URL in ../stores/mapStore.ts.
+const DEFAULT_NAV_CONFIG: NavFile = {
+  dataRepository: {
+    layer: 'MSPudhu:DataRepository',
+    submenus: [
+      'MSPudhu:Environment',
+      'MSPudhu:Ecology',
+      'MSPudhu:Human_Activities',
+      'MSPudhu:Socio_Economic',
+    ],
+  },
+  'status indicators': { layer: 'MSPudhu:StatusIndicators' },
+  conflicts: { layer: 'MSPudhu:Conflicts' },
+  services: { layer: 'MSPudhu:Services' },
+  lakshadweep: { layer: 'MSPLak:Boundaries' },
+};
+
+function loadNavFile(): NavFile {
+  const raw = import.meta.env.VITE_NAV_CONFIG;
+  return raw ? JSON.parse(raw) : DEFAULT_NAV_CONFIG;
+}
+
 async function discoverChildren(layer: string, submenus: Set<string>): Promise<NavEntryConfig[]> {
   const node = await fetchCapabilitiesNode(layer);
   if (!node?.children.length) return [];
@@ -43,7 +68,7 @@ async function discoverChildren(layer: string, submenus: Set<string>): Promise<N
 }
 
 async function fetchNavConfig(): Promise<NavConfig> {
-  const rawNav: NavFile = await fetch('/config/nav.json').then((r) => r.json());
+  const rawNav = loadNavFile();
   const nav: NavConfig = {};
   await Promise.all(
     Object.entries(rawNav).map(async ([key, root]) => {

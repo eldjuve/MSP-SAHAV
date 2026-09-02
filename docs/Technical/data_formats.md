@@ -1,11 +1,12 @@
 # GeoServer Data Formats
 
 The frontend's navigation, map layers, legend, and chart data are all
-discovered from GeoServer at runtime. `public/config/nav.json` is the only
-hardcoded config file in the app, and it holds nothing but nav labels and
-which GeoServer layer/layer group each one points at — everything else
-(layer titles, descriptions, bounding boxes, legend classes, chart content)
-comes from GeoServer itself.
+discovered from GeoServer at runtime. The nav config (`src/stores/configStore.ts`'s
+`DEFAULT_NAV_CONFIG`, optionally overridden per build via `VITE_NAV_CONFIG`)
+is the only hardcoded config in the app, and it holds nothing but nav
+labels and which GeoServer layer/layer group each one points at —
+everything else (layer titles, descriptions, bounding boxes, legend
+classes, chart content) comes from GeoServer itself.
 
 This document describes what GeoServer needs to expose for the app to work,
 and the exact JSON shapes it expects.
@@ -16,15 +17,15 @@ and the exact JSON shapes it expects.
 `VITE_GEOSERVER_URL` in `.env.local`) is a bare base URL with no workspace —
 each layer's own workspace (from its `workspace:name` qualifier) is appended
 per-request, via `wmsUrlForWorkspace`/`wfsUrlForWorkspace` in
-`src/stores/mapStore.ts`. This lets `nav.json` span more than one GeoServer
-workspace (see the `demo-geoserver` stack's second `MSPLak` workspace for an
-example).
+`src/stores/mapStore.ts`. This lets the nav config span more than one
+GeoServer workspace (see the `demo-geoserver` stack's second `MSPLak`
+workspace for an example).
 
-## Navigation (`nav.json`)
+## Navigation (nav config)
 
-`public/config/nav.json` holds one root per top nav key, each a plain
-`GeoServer` group name plus an optional list of children that should expand
-into a further nav submenu:
+The nav config holds one root per top nav key, each a plain GeoServer
+group name plus an optional list of children that should expand into a
+further nav submenu:
 
 ```ts
 { layer: string, submenus?: string[] }
@@ -57,13 +58,13 @@ node isn't independently checkable — checking it cascades to its children).
 Most nav items map to a layer group, bundling a boundary layer together with
 one or more topic layers.
 
-If a `nav.json` entry's `layer` isn't published yet, clicking it just shows
+If a nav config entry's `layer` isn't published yet, clicking it just shows
 that label with no map layer or chart, rather than erroring.
 
 ### Layer groups
 
-Every layer group `nav.json` (in any workspace it references) discovers
-from should have a `Title` and, ideally, an `Abstract` set, since those
+Every layer group the nav config discovers from (in any workspace it
+references) should have a `Title` and, ideally, an `Abstract` set, since those
 become the sidebar heading/body text directly — there's no local text to
 fall back to. A "nested" group (one whose own members are other groups
 rather than plain layers) needs each of its listed `submenus` members to be

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Creates every layer group the frontend's nav.json expects (see
+# Creates every layer group the frontend's nav config expects (see
 # ../../../docs/Technical/data_formats.md). Each group gets a
 # Title/Abstract, since that's what the sidebar shows when it's selected
 # (there's no local text to fall back to).
@@ -155,9 +155,10 @@ create_group "Socio_Economic" "Socio Economic" \
   "layerGroup:Coastal_Aquaculture" "layerGroup:Surface_Boats" "layerGroup:Scuba"
 
 echo "== top nav anchors =="
-# nav.json's other three top-level nav entries need a real group to discover
-# from too (see public/config/nav.json), the same way DataRepository anchors
-# "Data Repository" below — a single-member group is unusual but valid.
+# The nav config's other three top-level nav entries need a real group to
+# discover from too (see ../../../docs/Technical/data_formats.md), the same
+# way DataRepository anchors "Data Repository" below — a single-member group
+# is unusual but valid.
 
 create_group "StatusIndicators" "Status Indicators" \
   "Status indicator layers for the Puducherry region." \

@@ -2,15 +2,19 @@
 
 ## Overview
 
-The sidebar navigation is driven by a single config file,
-`public/config/nav.json`, combined with data discovered from GeoServer at
-runtime. `nav.json` only says which GeoServer group each top-level nav
-entry points at, and which of its descendants should become a further
-submenu — it never names an individual leaf layer. Everything a user
-actually sees (labels, descriptions, which layers a click loads) comes from
-GeoServer's own `GetCapabilities` response.
+The sidebar navigation is driven by a small nav config, combined with data
+discovered from GeoServer at runtime. The nav config only says which
+GeoServer group each top-level nav entry points at, and which of its
+descendants should become a further submenu — it never names an individual
+leaf layer. Everything a user actually sees (labels, descriptions, which
+layers a click loads) comes from GeoServer's own `GetCapabilities` response.
 
-## `nav.json` shape
+The nav config itself is baked in at build time: `DEFAULT_NAV_CONFIG` in
+`src/stores/configStore.ts` is the default, and it can be overridden per
+build via the `VITE_NAV_CONFIG` environment variable (a JSON string — see
+`.env.example`) without touching source.
+
+## `NavFile` shape
 
 ```ts
 type NavFile = Record<
@@ -37,15 +41,16 @@ Example:
 ```
 
 Each top-level key is referenced from `src/components/Navbar.tsx`'s
-`NAV_ITEMS` list, which maps a nav bar label to the `nav.json` key that
+`NAV_ITEMS` list, which maps a nav bar label to the nav config key that
 supplies its dropdown. A `NAV_ITEMS` entry with `key: null` renders as a
 disabled placeholder — useful for menu items that exist in the UI but have
 no content to discover yet.
 
 ## How it works
 
-1. On startup, `fetchNavConfig` in `src/stores/configStore.ts` fetches
-   `nav.json` and, for each root, calls `discoverChildren`.
+1. On startup, `fetchNavConfig` in `src/stores/configStore.ts` loads the
+   nav config (`VITE_NAV_CONFIG` if set, otherwise `DEFAULT_NAV_CONFIG`)
+   and, for each root, calls `discoverChildren`.
 2. `discoverChildren` fetches the root's `GetCapabilities` node (via
    `fetchCapabilitiesNode` in `src/lib/capabilities.ts`) and walks its
    children. A child whose name is **not** in `submenus` becomes a flat,
@@ -76,7 +81,8 @@ groups in GeoServer and the nav tree picks it up on next load.
 
 To add a new **top-level** nav entry:
 
-1. Add a key to `nav.json` naming the GeoServer group it should discover
+1. Add a key to `DEFAULT_NAV_CONFIG` (or your `VITE_NAV_CONFIG` override)
+   naming the GeoServer group it should discover
    from.
 2. Add a matching `{ label, key }` entry to `NAV_ITEMS` in
    `src/components/Navbar.tsx`.
