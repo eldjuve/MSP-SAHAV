@@ -1,106 +1,86 @@
-**User Documentation for the Web Application**
-## Understanding the  Menu Configuration
+# Menu / Navigation Configuration
 
-### Structure of the  Menu
-The  menu is structured using three key configuration files:
+## Overview
 
-1. **datarepo.json** - Defines the main menu categories and their items.
-2. **menuitems.json** - Provides details about each clickable category or item.
-3. **Multi_DataTree.json** - Maps each menu item to its respective web map service (WMS) layers.
+The sidebar navigation is driven by a single config file,
+`public/config/nav.json`, combined with data discovered from GeoServer at
+runtime. `nav.json` only says which GeoServer group each top-level nav
+entry points at, and which of its descendants should become a further
+submenu — it never names an individual leaf layer. Everything a user
+actually sees (labels, descriptions, which layers a click loads) comes from
+GeoServer's own `GetCapabilities` response.
 
-### How It Works
-1. When a user clicks on a **category** or **menu item** , the application looks up the corresponding entry in `menuitems.json`.
-2. This entry contains:
-   - A **key** to locate the relevant data in `Multi_DataTree.json`.
-   - A **jsonpath** that links to `Multi_DataTree.json`.
-   - Other metadata like title, map center, zoom level, and additional descriptions.
-3. The application then retrieves the relevant layers from `Multi_DataTree.json` using the key.
-4. The selected layers are displayed on the map using Leaflet and GeoServer WMS.
+## `nav.json` shape
 
-### Example
-#### **datarepo.json**
-```json
-{
-  "dataRepository": [
-    {
-      "category": "Boundaries",
-      "items": []
-    },
-    {
-      "category": "LULC",
-      "items": []
-    }
-  ]
-}
+```ts
+type NavFile = Record<
+  string,
+  {
+    layer: string; // a GeoServer group name, e.g. "MSPudhu:DataRepository"
+    submenus?: string[]; // layer names that should expand into a further submenu
+  }
+>;
 ```
 
-#### **menuitems.json**
+Example:
+
 ```json
 {
-  "LULC": {
-    "data": ["lulc"],
-    "key": "Lulc",
-    "jsonpath": "Multi_DataTree.json",
-    "title": "Land Use Land Cover",
-    "center": [11.95, 79.8],
-    "zoom": 12,
-    "about": "",
-    "chapterheader": ""
+  "dataRepository": {
+    "layer": "MSPudhu:DataRepository",
+    "submenus": ["MSPudhu:Environment", "MSPudhu:Ecology"]
+  },
+  "status indicators": {
+    "layer": "MSPudhu:StatusIndicators"
   }
 }
 ```
 
-#### **Multi_DataTree.json**
-```json
-{
-  "Lulc": [
-    {
-      "Number": "lulc",
-      "service": "MSP:Pondy_lulc",
-      "Name": "Land Use"
-    }
-  ]
-}
-```
+Each top-level key is referenced from `src/components/Navbar.tsx`'s
+`NAV_ITEMS` list, which maps a nav bar label to the `nav.json` key that
+supplies its dropdown. A `NAV_ITEMS` entry with `key: null` renders as a
+disabled placeholder — useful for menu items that exist in the UI but have
+no content to discover yet.
 
-### Creating a Custom  Menu
-To add a new category and layers:
-1. Add a new **category** in `datarepo.json`.
-2. Define its details in `menuitems.json`, specifying:
-   - `key`: Unique identifier for the menu item.
-   - `jsonpath`: Path to `Multi_DataTree.json`.
-   - `center` and `zoom`: Map location and zoom level.
-3. Add corresponding layers in `Multi_DataTree.json` with:
-   - `Number`: Unique layer identifier.
-   - `service`: The WMS service name.
-   - `Name`: Display name for the layer.
+## How it works
 
-## Dynamic Submenu building using config files.
+1. On startup, `fetchNavConfig` in `src/stores/configStore.ts` fetches
+   `nav.json` and, for each root, calls `discoverChildren`.
+2. `discoverChildren` fetches the root's `GetCapabilities` node (via
+   `fetchCapabilitiesNode` in `src/lib/capabilities.ts`) and walks its
+   children. A child whose name is **not** in `submenus` becomes a flat,
+   clickable leaf (`{ label, layer }`). A child whose name **is** in
+   `submenus` recurses, becoming a submenu of its own discovered children.
+   `submenus` is checked at every level, so it applies recursively through
+   nested groups.
+3. The resolved tree (`NavConfig`) is what `Navbar.tsx` renders as dropdown
+   menus, including nested `DropdownMenu.Sub` submenus.
+4. Clicking a resolved leaf (`handleMenuItemClick` in
+   `src/lib/menuHandler.ts`) fetches that leaf's own `GetCapabilities` node
+   and:
+   - zooms the map to that layer's bounding box,
+   - builds the Layers panel tree from its children (if it's a layer group)
+     and selects all of them,
+   - sets the sidebar title/about text from the layer's own
+     `Title`/`Abstract`,
+   - triggers a chart-data fetch for every newly selected sublayer.
 
-User Clicks Sidebar Category
-       │
-       ▼
-Application Fetches Data from `datarepo.json`
-       │
-       ▼
-Application Checks `menuitems.json` for Details
-       │
-       ├── Retrieves key, jsonpath, title, center, zoom
-       │
-       ▼
-Application Retrieves Layer Information from `Multi_DataTree.json`
-       │
-       ├── Uses key from `menuitems.json` to find relevant WMS layers
-       │
-       ▼
-Application Loads Selected Layers onto the Map (Leaflet + GeoServer)
-       │
-       ├── Adds WMS layers using Leaflet
-       │
-       ▼
-UI Updates with Legend and Layer Panel Adjustments
-       │
-       ├── Updates legend based on active layers
-       ├── Displays selected layers in the layers panel
-       ▼
-Layers are Visible on the Map
+`GetCapabilities` is fetched once per workspace per session and cached (see
+`src/lib/capabilities.ts`), not re-fetched on every click.
+
+## Adding a new nav entry
+
+Adding, renaming, or reorganizing what appears under an existing top-level
+nav entry needs no frontend change at all — publish or rearrange layer
+groups in GeoServer and the nav tree picks it up on next load.
+
+To add a new **top-level** nav entry:
+
+1. Add a key to `nav.json` naming the GeoServer group it should discover
+   from.
+2. Add a matching `{ label, key }` entry to `NAV_ITEMS` in
+   `src/components/Navbar.tsx`.
+
+See `docs/Technical/data_formats.md` for what GeoServer needs to expose
+(layer group titles/abstracts, chart data, opacity conventions) for a nav
+entry to render fully.

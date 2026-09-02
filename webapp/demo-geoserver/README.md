@@ -7,12 +7,12 @@ real production GeoServer. It's seeded with the real Puducherry MSP data
 workspace `MSPudhu`, and committed under `data/`),
 scoped down to the ~79 layers `public/config/nav.json`
 can reach, organized into the layer groups it expects (see
-`../GEOSERVER_CHANGES.md`'s "Layer groups to create" table), styled with the
+`../../docs/Technical/data_formats.md`), styled with the
 same real SLD cartography the production site uses (green mangroves,
 transparent-fill district boundaries, custom point icons — see `styles/`),
-plus a `WaterQuality_Buoy` point layer (recreating the old app's static
-buoy marker as a real GeoServer feature, custom icon included — see
-`../GEOSERVER_CHANGES.md`) and a demo `MSPudhu:ChartData` table so the
+plus a `WaterQuality_Buoy` point layer (a real GeoServer point feature with
+a custom icon — see `../../docs/Technical/data_formats.md`) and a demo
+`MSPudhu:ChartData` table so the
 Water Quality / Marine Pollution / Weather chart panels have something to
 show. Chart values are synthetic demo data, not real measurements.
 
@@ -28,7 +28,7 @@ reanalysis, Copernicus Climate Change Service, CC BY 4.0) — see
 `scripts/lakshadweep-chartdata.py`. Unlike `MSPudhu:ChartData`, these
 values aren't synthetic. It's all there purely to demonstrate that
 `nav.json` and the frontend's per-layer workspace resolution (see
-`../GEOSERVER_CHANGES.md`) support more than one GeoServer workspace; it
+`../../docs/Technical/data_formats.md`) support more than one GeoServer workspace; it
 shows up in the app's top nav as "Lakshadweep (demo)"
 (`../src/components/Navbar.tsx`), not part of the real site's menu.
 
@@ -58,7 +58,7 @@ GeoServer admin UI: http://localhost:8080/geoserver (admin / geoserver).
 | `scripts/init-geoserver.sh` | creates the `MSPudhu` workspace and a `mspudhu_postgis` PostGIS datastore |
 | `scripts/load-data.sh` | imports each downloaded GeoJSON into PostGIS via a throwaway `ogr2ogr` container (no local GDAL install needed) |
 | `scripts/publish-layers.sh` | publishes each loaded table as a GeoServer layer, using the exact mixed-case layer name the frontend expects as the exposed name (`ogr2ogr` lowercases table names on import; `nativeName` maps back to the real table), and sets each layer's `Title` — the label the frontend actually displays — from `layer-title-overrides.tsv`, then `layer-titles.tsv`, then a `"_"` -> `" "` reformat of the raw name |
-| `scripts/create-layer-groups.sh` | creates every layer group `public/config/nav.json` references (bundles like `Boundaries`, plus the nested `Environment`/`Ecology`/`Human_Activities`/`Socio_Economic`/`DataRepository` groups), each with a `Title`/`Abstract` — that's what the sidebar shows when a group is selected, since there's no local text to fall back to |
+| `scripts/create-layer-groups.sh` | creates every layer group `public/config/nav.json` references (bundles like `Boundaries`, plus the nested `Environment`/`Ecology`/`Human_Activities`/`Socio_Economic`/`DataRepository` groups), each with a `Title`/`Abstract` — that's what the sidebar shows when a group is selected, since there's no local text to fall back to. See `../../docs/Technical/data_formats.md` |
 | `scripts/apply-styles.sh` | uploads every `styles/*.sld` to the local GeoServer and sets each layer's default style per `layer-style-map.tsv`, so the demo looks like the real site (green mangroves, transparent-fill boundaries, etc.) instead of GeoServer's generic gray default |
 | `scripts/chartdata.py` | generates the demo `MSPudhu:ChartData` rows + `CREATE TABLE`/`INSERT` SQL, matching the `ChartBundle`/`ChartSpec` shapes in `../src/lib/geoserver.ts` |
 | `scripts/seed-chartdata.sh` | runs `chartdata.py`, loads it into Postgres, and publishes `MSPudhu:ChartData` |
@@ -136,10 +136,9 @@ fix the member name or drop it from that group's member list in the script.
   `GetMap` tile and looking at the pixels — an `HTTP 200`/`201` on style
   upload only proves the XML parsed, not that the icon shows up.
   on a fresh `apply-styles.sh` run.
-- **Every style's `fill-opacity`/`stroke-opacity` was set to `0.7`/`1`**
-  (translucent fills, crisp outlines — see `../GEOSERVER_CHANGES.md`'s
-  "Layer opacity" section), replacing a frontend `LAYERS_NOT_TRANSPARENT`
-  list that hardcoded per-layer opacity. The `.sld` files are committed
+- **Every style's `fill-opacity`/`stroke-opacity` is set to `0.7`/`1`**
+  (translucent fills, crisp outlines — see `../../docs/Technical/data_formats.md`'s
+  "Layer opacity" section). The `.sld` files are committed
   with this baked in — recovering and re-running `fetch-styles.py` (see the
   note above the script table) would pull pristine copies from the live
   server and lose it, so re-apply the same fill-opacity/stroke-opacity

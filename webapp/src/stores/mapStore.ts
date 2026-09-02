@@ -40,10 +40,10 @@ export function getMap() {
 const BASEMAP_TILES: Record<BasemapType, () => L.TileLayer> = {
   // Pulls Google's raw tile server directly rather than through the
   // official Maps JS API/embed — outside Google's terms of service for
-  // programmatic tile access (inherited from the pre-rewrite app, not
-  // introduced here). Attributed regardless; swap for a licensed satellite
-  // source (Esri's World_Imagery is already used below for "imagery") if
-  // this app is ever meant for production use beyond an internal demo.
+  // programmatic tile access. Attributed regardless; swap for a licensed
+  // satellite source (Esri's World_Imagery is already used below for
+  // "imagery") if this app is ever meant for production use beyond an
+  // internal demo.
   satellite: () =>
     L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
       maxZoom: 22,
@@ -103,9 +103,9 @@ export function changeBasemap(type: BasemapType) {
 export function addWmsLayer(layerId: string, service: string, name: string) {
   if (!_map || _addedLayers[layerId]) return;
   // Each layer's own SLD bakes in its fill/stroke opacity (fill-opacity
-  // 0.7, stroke-opacity 1 — see ../../GEOSERVER_CHANGES.md), so the
-  // rendered PNG's own alpha channel is already correct at full tile
-  // opacity.
+  // 0.7, stroke-opacity 1 — see ../../../docs/Technical/data_formats.md),
+  // so the rendered PNG's own alpha channel is already correct at full
+  // tile opacity.
   const layer = L.tileLayer.wms(wmsUrlForWorkspace(getWorkspace(service)), {
     layers: service,
     format: 'image/png',

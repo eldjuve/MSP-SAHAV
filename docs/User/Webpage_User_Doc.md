@@ -1,55 +1,92 @@
 **User Documentation for the Web Application**
 
 ## Introduction
-This document provides instructions on how to use the web application. The application is primarily built with JavaScript and integrates mapping functionalities using Leaflet and GeoServer.
+
+This document explains how to use the Puducherry Geo MSP web application.
+The app is a browser-based interactive map for exploring Marine Spatial
+Planning data — boundaries, land use, ecology, infrastructure, status
+indicators, and conflicts between coastal activities — built on Leaflet and
+GeoServer.
 
 ## System Requirements
-- A modern web browser (Google Chrome, Mozilla Firefox, Microsoft Edge, Safari)
+
+- A modern web browser (Chrome, Firefox, Edge, Safari)
 - JavaScript enabled
-- Internet connection for online features
+- An internet connection
 
 ## Getting Started
-### Accessing the Application
-1. Open your preferred web browser.
-2. Enter the application URL in the address bar.
-3. Press **Enter** to load the application.
+
+1. Open your browser.
+2. Enter the application URL in the address bar and press **Enter**.
 
 ### User Interface Overview
-- **Map Display**: The main content area consists of an interactive map powered by Leaflet.
-- **Navigation Menu**: Contains options for data repository, status indicators, conflicts and compatibilities, and other services by Ministry of Earth sciences.
-- **Layer List Widget**: Allows users to toggle different map layers.
-- **Legend Widget**: Displays information about active layers.
+
+- **Top bar** — the MSP logo, and a link to INCOIS's storm surge web GIS
+  portal.
+- **Navigation menu** — dropdown menus for exploring the available data
+  (see "Menu Navigation" below).
+- **Map** — the main interactive map, powered by Leaflet.
+- **Map tools** (top-right) — buttons for the Layers, Legend, and Basemaps
+  panels.
+- **Info panel** — a slide-out panel on the right showing details and
+  charts for whatever is currently selected. Toggle it with the "INFO" tab
+  on its edge.
 
 ## Features
+
 ### 1. Map Interaction
-- Pan and zoom using the mouse or touch controls.
 
-### 2. Layer Management
-- Open the **Layers** panel by clicking the **Layers** button.
-- Select layers from the list to display them on the map.
-- Click the **Legend** button to view symbols for active layers.
-- Remove layers by unchecking them from the list.
+Pan and zoom with the mouse, touch controls, or the zoom buttons in the
+bottom-right corner.
 
-### 3. Base Map Selection
-- Click the **More** button and select **Basemaps**.
-- Choose between **Goolgle Satellite**, **ESRI World Imagery**, **ESRI Topographic** or one can add maps like Openstreet maps.
-- ESRI maps can be used freely with attribution on map.
+### 2. Menu Navigation
 
-### 5. Menu Navigation
-- Click any menu item in the sidebar to explore different functionalities:
-  - **Data Repository**: Displays available datasets on Puducherry boundaries, water resources, LULC and ther ecological, social and environmental data.
-  - **Status Indicators**: Shows status indicators of water quality in puducherry coasts over the years and also the changes in mangroves.
-  - **Conflicts & Compatibilities**: Identifies conflicts of tourism vs shoreline where activities of tourism are allowd along shorelines and other conflicts. 
+Click a menu item in the top navigation bar to open its dropdown, then
+click an entry to load it:
 
+- **Data Repository** — boundaries, land use/land cover, water resources,
+  environment, ecology, human activities, socio-economic layers, and
+  coastal inundation risk.
+- **Status Indicators** — status layers such as marine pollution and water
+  quality.
+- **Conflicts & Compatibilities** — where activities like tourism, fishing,
+  and shoreline use overlap or conflict.
+- **Services-MoES** — services published by the Ministry of Earth Sciences.
 
-### 7. How to Download Maps
-- Users can download map layers by clicking the **Download** option in the submenu.
-- A form will appear requesting the following details:
-  - **Name**: Enter your full name.
-  - **Email**: Provide a valid email address.
-  - **Institute**: Provide Institute name or organization name.
-  - **Usage Purpose**: Specify how you intend to use the map data.
-  - **Enter Captcha**: enter captcha image text to ensure you are not a robot.
-- After filling in the required fields, click the **Download** button.
-- The requested layer file will be provided for free use.
-- Ensure that you provide accurate information to receive the dataset.
+Some menu items may appear disabled (greyed out) if that section has no
+published content yet.
+
+Selecting a menu item:
+
+- moves the map to that item's area,
+- loads its associated map layers,
+- opens the info panel with a description and, if available, charts for
+  that item.
+
+### 3. Layer Management
+
+- Click the **Layers** button (top-right) to open the Layers panel.
+- Layers are grouped; a group's checkbox selects or clears every layer in
+  it, and expands/collapses with the arrow on its right.
+- Click the magnifying-glass icon next to a layer to zoom the map to its
+  extent.
+- Uncheck a layer to remove it from the map.
+
+### 4. Legend
+
+Click the **Legend** button to see the symbols and colors used by every
+currently active layer.
+
+### 5. Base Map Selection
+
+Click the **Basemaps** button and choose between **Google Satellite Map**,
+**ESRI World Imagery**, or **ESRI Topographic**. Google and Esri imagery can
+be used with attribution, which the map already displays.
+
+### 6. Info Panel and Charts
+
+When a selected feature has associated reports (e.g. water quality,
+weather, or mangrove status over time), the info panel shows its
+description and charts. If more than one report is available for what's
+currently selected, a dropdown at the top of the info panel lets you switch
+between them.

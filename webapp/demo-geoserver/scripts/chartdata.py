@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Builds demo MSPudhu:ChartData rows and emits a SQL file that creates the
 table and inserts them. Shapes follow ChartBundle/ChartSpec in
-src/lib/geoserver.ts and GEOSERVER_CHANGES.md. Values are illustrative demo
-data, not real measurements."""
+src/lib/geoserver.ts and docs/Technical/data_formats.md. Values are
+illustrative demo data, not real measurements."""
 import json
 import random
 
@@ -116,8 +116,8 @@ marine_outfall = [
 rows = {
     "District_Boundary": {"chart_data": district_boundary, "lon": 79.83, "lat": 11.94},
     "Marine_Outfall": {"chart_data": marine_outfall, "lon": 79.86, "lat": 11.95},
-    # Real buoy coordinates recovered from the old app's addBuoys() (Leaflet
-    # marker at [11.919712, 79.846512] — see GEOSERVER_CHANGES.md).
+    # Real buoy coordinates ([11.919712, 79.846512], off Puducherry) — see
+    # docs/Technical/data_formats.md.
     "WaterQuality_Buoy": {"chart_data": water_quality_buoy, "lon": 79.846512, "lat": 11.919712},
 }
 

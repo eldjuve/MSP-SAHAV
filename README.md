@@ -23,33 +23,37 @@ The **Puducherry Geo MSP portal** aligns with multiple **United Nations Sustaina
 
 ---
 
-## GIS Website Template  
-This repository provides a **template** for hosting GIS layers using **Leaflet** and **GeoServer**. It allows users to easily add **Web Map Service (WMS) layers** and customize their own GIS applications.  
+## About
 
-### **Features**  
-✔️ Interactive map with **Google Maps** or **ESRI Maps** as the base layer.  
-✔️ Supports **WMS and WFS layers** from GeoServer.  
-✔️ Dynamic layer management using JavaScript.  
-✔️ Customizable styles for vector and raster layers.  
-✔️ Visualization of regional statistics.  
-✔️ Dynamically built and customizable UI components.  
-✔️ Open-source and easily extendable.  
+This repository is a **Marine Spatial Planning web application** built with
+**SolidJS**, **TypeScript**, and **Vite**, mapping data with **Leaflet** and
+**ECharts**. Its navigation, map layers, legends, and charts are all
+discovered from a **GeoServer** instance at runtime rather than hardcoded in
+the frontend — see [Why This Rewrite](docs/rewrite-rationale.md) for the
+reasoning, and [Data Formats](docs/Technical/data_formats.md) for exactly
+what GeoServer needs to expose.
+
+### **Features**
+✔️ Interactive map with Google Satellite or ESRI imagery/topo base layers.
+✔️ Navigation, layer groups, legends, and chart availability discovered from GeoServer's `GetCapabilities`/WFS, not hardcoded.
+✔️ WMS and WFS layers from GeoServer, spanning multiple workspaces.
+✔️ Chart panels (box plot, bar/line, scatter) rendered with ECharts, driven entirely by server-supplied data.
+✔️ Typed end to end with TypeScript.
+✔️ A local GeoServer + PostGIS demo stack (`webapp/demo-geoserver/`) for development without touching production.
 
 ---
 
 ## ✅ Prerequisites
 
-To set up and work with this project, you’ll need the following:
+To set up and work with this project, you'll need the following:
 
-- A web server (e.g., Python HTTP server, VS Code Live Server, or IIS for deployment).
-- [GeoServer](https://geoserver.org/) installed and running.
-- Basic understanding of **hosting vector and raster files in GeoServer**  
-  ➤ Refer to [GeoServer Setup & Hosting Guide](docs/Installation/Backend/geoserver_setup_and_host_services.md)
-- [QGIS](https://qgis.org/en/site/) for styling layers (optional).  
+- [Node.js](https://nodejs.org/) (for running the Vite dev server and build).
+- [GeoServer](https://geoserver.org/) installed and running — or use the bundled `webapp/demo-geoserver/` Docker Compose stack for local development.
+  ➤ Refer to [GeoServer Setup & Hosting Guide](docs/installation/Backend/geoserver_setup_and_host_services.md)
+- [QGIS](https://qgis.org/en/site/) for styling layers (optional).
   ➤ For styling vector/raster layers, see the [QGIS Styling Guide](https://docs.qgis.org/3.40/en/docs/user_manual/working_with_vector/vector_properties.html#symbology-properties)
-- Basic knowledge of **JavaScript, HTML, and CSS**
-- Familiarity with the [Leaflet](https://leafletjs.com/reference.html) JavaScript API  
-  ➤ See [Guide to Consuming GeoServer APIs](docs/Installation/Frontend/consume_geoserver_apis.md)
+- Basic knowledge of **TypeScript** and [SolidJS](https://www.solidjs.com/).
+  ➤ See [Guide to Consuming GeoServer APIs](docs/installation/Frontend/consume_geoserver_apis.md)
 
 ---
 
@@ -58,9 +62,10 @@ To set up and work with this project, you’ll need the following:
 Our project includes well-organized documentation, divided into technical and user-facing content:
 
 ### 🔧 Technical Documentation
-- [Project Structure](docs/Technical/project-structure.md)
-- [Web Application Design](docs/Technical/menu_configuration.md)
-- [Technical Scripts Description](docs/Technical/scripts_description.md)
+- [Why This Rewrite](docs/rewrite-rationale.md)
+- [Menu / Navigation Configuration](docs/Technical/menu_configuration.md)
+- [GeoServer Data Formats](docs/Technical/data_formats.md)
+- [Basemaps](docs/Technical/basemaps.md)
 
 ### 👤 User Documentation
 - [Webpage User Guide](docs/User/Webpage_User_Doc.md)
@@ -68,43 +73,36 @@ Our project includes well-organized documentation, divided into technical and us
 For complete insights into the system setup, usage, and internal workings, explore the documents above.
 
 
-## Installation  
+## Installation
 
-### **1️⃣ Clone the Repository**  
+### 1️⃣ Clone the Repository
 ```sh
 git clone https://github.com/nccrmoes/MSP-SAHAV.git
-cd MSP-SAHAV
-
-
-## 2. Set up a web server (for local testing)
-
-### Option 1
-If you are using Python, run:
-```sh
-python -m http.server 8080
+cd MSP-SAHAV/webapp
 ```
-Then open `http://localhost:8080/map.html` in your browser.
 
-### Option 2
-If you are using Node.js
-cd path\to\your\project
+### 2️⃣ Install dependencies
+```sh
+npm install
+```
 
-npm install -g http-server
+### 3️⃣ Point the app at a GeoServer instance
+```sh
+cp .env.example .env.local
+```
+Set `VITE_GEOSERVER_URL` in `.env.local` to your GeoServer's base URL (no
+workspace, no `/wms`). To develop against a local instance seeded with real
+demo data instead, see `webapp/demo-geoserver/README.md`.
 
-http-server -p 8000
+### 4️⃣ Run the dev server
+```sh
+npm run dev
+```
+Open the local URL Vite prints (typically `http://localhost:5173`).
 
-Then Open http://localhost:8000/map.html in your browser.
-
-### Option 3
-Copy the extracted folder in /inetpub/wwwroot/MAP-SAHAV
-add a virtual application in IIS pointing to this folder.
-Browse map.html from IIS which http://localhost:port/map.html in browser
-
-### 3. Configure GIS Layers
-Edit the `main.js` file to add your GeoServer WMS and WFS layer URLs:
-```js
-var WMS_LAYER_URL = "https://your-geoserver-url/geoserver/wms";
-var WFS_LAYER_URL = "https://your-geoserver-url/geoserver/wfs";
+### 5️⃣ Build for production
+```sh
+npm run build
 ```
 
 ## Contributing

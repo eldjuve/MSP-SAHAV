@@ -1,10 +1,8 @@
 #!/bin/bash
-# Creates every layer group the frontend's nav.json now expects (see
-# ../../GEOSERVER_CHANGES.md's "Layer groups to create" table) — the old
-# per-menu-item Multi_DataTree.json trees are now real GeoServer layer
-# groups instead of frontend-only config. Each group gets a Title/Abstract,
-# since that's what the sidebar shows when it's selected (there's no local
-# text to fall back to any more).
+# Creates every layer group the frontend's nav.json expects (see
+# ../../../docs/Technical/data_formats.md). Each group gets a
+# Title/Abstract, since that's what the sidebar shows when it's selected
+# (there's no local text to fall back to).
 #
 # Order matters: "nested" groups (Environment, Ecology, Human_Activities,
 # Socio_Economic, DataRepository) reference *other* layer groups as

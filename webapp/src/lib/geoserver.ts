@@ -7,7 +7,7 @@ export type ScatterPoint = { year: number; value: number };
 
 // Server-shaped, ready-to-render chart data — the client picks its renderer
 // by `chartType` and does no further data shaping (grouping, sorting,
-// aggregating raw rows). See GEOSERVER_CHANGES.md.
+// aggregating raw rows). See ../../../docs/Technical/data_formats.md.
 export type ChartSpec =
   | {
       chartType: 'boxplot';

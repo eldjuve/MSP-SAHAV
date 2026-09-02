@@ -1,28 +1,23 @@
 # Hand-curated layer titles, highest priority — checked before
 # layer-titles.tsv (fetched from the live server) and before
-# publish-layers.sh's own "_" -> " " fallback.
-#
-# Recovered from the old app's Multi_DataTree.json (removed by the
-# solidjs-rewrite — see GEOSERVER_CHANGES.md), which named a layer once per
-# place it appeared in the old hardcoded menu tree. That file's names aren't
-# reproduced verbatim here — only the entries that are a genuine editorial
-# choice (not just "_" replaced with " ", which the fallback already
-# handles) and aren't superseded by a real title on the live server.
+# publish-layers.sh's own "_" -> " " fallback. Only entries that are a
+# genuine editorial choice (not just "_" replaced with " ", which the
+# fallback already handles) and aren't superseded by a real title on the
+# live server.
 LULC_Pondy	Land Use
 Geomorphology_Clipped	Geomorphology
 Mangroves_2022	Mangroves
 CIRA_PY_final	Vulnerability
 River	Rivers
 VillageBoundary	Village Boundaries
-# Not from Multi_DataTree.json — these two are plain camelCase with no "_"
-# for the fallback to split on, so they'd otherwise show unspaced.
+# These two are plain camelCase with no "_" for the fallback to split on,
+# so they'd otherwise show unspaced.
 VillageNames	Village Names
 SandSpit	Sand Spit
-# Also not from Multi_DataTree.json — nav.json's "Status Indicators" entry
-# for this layer is editorially "Marine Pollution", not the outfall's own
-# name, now that it's discovered via the StatusIndicators group.
+# nav.json's "Status Indicators" entry for this layer is editorially
+# "Marine Pollution", not the outfall's own name, now that it's discovered
+# via the StatusIndicators group.
 Marine_Outfall	Marine Pollution
-# Not from Multi_DataTree.json either — a new point layer recreating the old
-# app's static buoy marker as a real GeoServer feature (see
-# GEOSERVER_CHANGES.md's "water-quality buoy" section and chartdata.py).
+# See docs/Technical/data_formats.md's "Point features" section and
+# chartdata.py.
 WaterQuality_Buoy	Water Quality

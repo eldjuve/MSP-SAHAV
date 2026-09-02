@@ -1,8 +1,8 @@
 #!/bin/bash
 # Publishes every table loaded by load-data.sh as a GeoServer layer in the
 # MSPudhu workspace, using the exact local layer names the frontend expects
-# (see referenced_local_names.txt / GEOSERVER_CHANGES.md). ChartData is
-# published separately by seed-chartdata.sh.
+# (see referenced_local_names.txt / ../../../docs/Technical/data_formats.md).
+# ChartData is published separately by seed-chartdata.sh.
 # ogr2ogr "launders" (lowercases) Postgres table names on import, so each
 # featureType's nativeName is the lowercased table but its exposed name
 # matches the original mixed-case service name.
@@ -17,9 +17,8 @@ DS="mspudhu_postgis"
 # A layer's Title is what the frontend actually displays (Legend/Layers
 # panel, sidebar heading) — its raw name is just an identifier. Priority:
 # 1. layer-title-overrides.tsv — hand-curated, e.g. "LULC_Pondy" -> "Land
-#    Use" (recovered from the old app's hardcoded Multi_DataTree.json,
-#    since neither GeoServer's default nor the live server has anything
-#    better for these).
+#    Use", since neither GeoServer's default nor the live server has
+#    anything better for these.
 # 2. layer-titles.tsv — fetched from the live production server for layers
 #    where it already has a genuinely more descriptive title set.
 # 3. Otherwise, mechanically reformat the raw name ("_" -> " ") — not as
