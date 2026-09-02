@@ -21,7 +21,7 @@ GeoServer.
 
 ### User Interface Overview
 
-- **Top bar** — the MSP logo, and a link to INCOIS's storm surge web GIS
+- **Top bar** — the app's icon and title, and a link to INCOIS's storm surge web GIS
   portal.
 - **Navigation menu** — dropdown menus for exploring the available data
   (see "Menu Navigation" below).
