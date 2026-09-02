@@ -64,7 +64,17 @@ export function Navbar() {
 
         {/* Nav items */}
         <ul
-          class={`flex-col md:flex-row flex-wrap md:flex items-start md:items-center gap-x-1 bg-white md:bg-transparent absolute md:relative top-full left-0 right-0 md:top-auto shadow-md md:shadow-none p-3 md:p-0 z-[1100] ${mobileOpen() ? 'flex' : 'hidden md:flex'}`}
+          // Only needs to beat z-index:auto (0), not any specific number —
+          // nothing else in the app sets an explicit z-index. Needed only
+          // for the mobile `absolute` overlay case below, since DOM order
+          // alone would otherwise put the later map/panels div on top of
+          // it; at md+ the list is `relative`/in-flow (never overlapping
+          // anything), so it's reset to auto there — keeping it set would
+          // give the list its own stacking context that outranks the
+          // dropdown portal's (unstyled, z-index: auto) content, painting
+          // a wrapped second row on top of an open dropdown instead of
+          // behind it.
+          class={`flex-col md:flex-row flex-wrap md:flex items-start md:items-center gap-x-1 bg-white md:bg-transparent absolute md:relative top-full left-0 right-0 md:top-auto shadow-md md:shadow-none p-3 md:p-0 z-2 md:z-auto ${mobileOpen() ? 'flex' : 'hidden md:flex'}`}
         >
           <For each={NAV_ITEMS}>
             {(nav) => {
