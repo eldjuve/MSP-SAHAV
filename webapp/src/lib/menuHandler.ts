@@ -16,7 +16,13 @@ import {
 
 const PUDUCHERRY_CENTER: [number, number] = [11.91, 79.78];
 
+// Guards against a fast second click resolving before a slower first one —
+// without this, clicking A then B could still end with A's (now-stale)
+// layer tree/sidebar content clobbering B's once A's fetch finally resolves.
+let requestId = 0;
+
 export async function handleMenuItemClick(item: NavEntryConfig) {
+  const thisRequest = ++requestId;
   clearAllWmsLayers();
 
   if (!item.layer) {
@@ -27,6 +33,7 @@ export async function handleMenuItemClick(item: NavEntryConfig) {
   }
 
   const node = await fetchCapabilitiesNode(item.layer);
+  if (thisRequest !== requestId) return;
   if (!node) {
     console.warn(`GeoServer layer not found: ${item.layer}`);
     setSidebarContent({ title: item.label, chartOptions: [] });
@@ -39,7 +46,11 @@ export async function handleMenuItemClick(item: NavEntryConfig) {
 
   const map = getMap();
   if (node.bounds && map) {
-    map.fitBounds(node.bounds);
+    // A single point feature's (or point layer group's) bounds collapse to
+    // near-zero area — fitBounds would otherwise zoom in as far as Leaflet
+    // allows trying to "fit" it. Cap how far a fit can zoom so a point
+    // lands at a sensible street-level view instead of a blank max-zoom tile.
+    map.fitBounds(node.bounds, { maxZoom: 15 });
   } else {
     setMapView(PUDUCHERRY_CENTER, 12);
   }

@@ -13,7 +13,7 @@ export function BasemapsPanel() {
     <div class="absolute top-4 right-25 bg-white rounded-xl shadow-md w-80 overflow-hidden">
       <div class="flex justify-between items-center px-4 py-3 font-bold text-lg">
         <span>Basemaps</span>
-        <button onClick={closePanel} class="border-none bg-none text-2xl cursor-pointer text-gray-500 hover:text-black leading-none">
+        <button onClick={closePanel} class="border-none bg-none text-2xl cursor-pointer text-gray-500 hover:text-black leading-none" aria-label="Close basemaps panel">
           ×
         </button>
       </div>

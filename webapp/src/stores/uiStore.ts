@@ -1,4 +1,4 @@
-import { createSignal } from 'solid-js';
+import { createSignal, createMemo } from 'solid-js';
 import type { EChartsOption } from 'echarts';
 
 export type ActivePanel = 'layers' | 'legend' | 'basemaps' | null;
@@ -34,8 +34,8 @@ const [featureCharts, setFeatureChartsRaw] = createSignal<Record<string, ChartRe
 // Every selected feature's reports, filtered down to actual chart_data
 // entries — this (not the main feature's own text) is what the sidebar
 // picker offers. It shows a picker whenever there's more than one.
-export const chartReportOptions = () =>
-  Object.values(featureCharts()).flat().filter(r => r.type === 'chart');
+export const chartReportOptions = createMemo(() =>
+  Object.values(featureCharts()).flat().filter(r => r.type === 'chart'));
 
 export const [selectedChartIndex, setSelectedChartIndex] = createSignal(0);
 

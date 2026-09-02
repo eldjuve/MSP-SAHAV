@@ -13,6 +13,10 @@ const NAV_ITEMS = [
   { label: 'Conflicts & Compatibilities', key: 'conflicts' },
   { label: 'Proposed MSP', key: null },
   { label: 'Services-MoES', key: 'services' },
+  // Demo-only: proves nav.json can span a second GeoServer workspace
+  // (MSPLak) — see demo-geoserver/scripts/setup-lakshadweep.sh. Not part
+  // of the real site's menu structure.
+  { label: 'Lakshadweep (demo)', key: 'lakshadweep' },
 ];
 
 

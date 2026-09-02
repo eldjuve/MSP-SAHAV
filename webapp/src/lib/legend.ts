@@ -1,4 +1,4 @@
-import { getWorkspace, wmsUrlForWorkspace } from '../stores/mapStore';
+import { getWorkspace, wmsUrlForWorkspace, WMS_VERSION } from '../stores/mapStore';
 
 export type LegendSwatch =
   | { kind: 'polygon'; fill: string; stroke: string }
@@ -59,7 +59,7 @@ export function fetchLegendClasses(service: string): Promise<LegendClass[]> {
   if (cached) return cached;
   const promise = (async () => {
     const params = new URLSearchParams({
-      service: 'WMS', version: '1.1.1', request: 'GetLegendGraphic',
+      service: 'WMS', version: WMS_VERSION, request: 'GetLegendGraphic',
       format: 'application/json', layer: service,
     });
     try {

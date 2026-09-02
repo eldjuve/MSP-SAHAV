@@ -1,6 +1,7 @@
 import { onMount, onCleanup, createEffect } from 'solid-js';
 import {
   initMapInstance,
+  destroyMapInstance,
   selectedLayerIds,
   layersTree,
   addWmsLayer,
@@ -17,6 +18,9 @@ export function MapContainer() {
 
   onMount(() => {
     initMapInstance(mapDiv);
+  });
+  onCleanup(() => {
+    destroyMapInstance();
   });
 
   createEffect(() => {

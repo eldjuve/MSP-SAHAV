@@ -1,28 +1,11 @@
 import type { LayerNode } from '../stores/configStore';
 
-export function findNodeByNumber(
-  data: LayerNode | LayerNode[] | Record<string, unknown>,
-  id: string,
-): LayerNode | null {
-  if (Array.isArray(data)) {
-    for (const item of data) {
-      const result = findNodeByNumber(item, id);
-      if (result) return result;
-    }
-    return null;
-  }
-  if (typeof data === 'object' && data !== null) {
-    const node = data as LayerNode;
+export function findNodeByNumber(nodes: LayerNode[], id: string): LayerNode | null {
+  for (const node of nodes) {
     if (node.Number === id) return node;
     if (node.Children) {
       const result = findNodeByNumber(node.Children, id);
       if (result) return result;
-    }
-    for (const key of Object.keys(data)) {
-      if (key !== 'Number' && key !== 'Name' && key !== 'service' && key !== 'Children') {
-        const result = findNodeByNumber((data as Record<string, unknown>)[key] as LayerNode, id);
-        if (result) return result;
-      }
     }
   }
   return null;

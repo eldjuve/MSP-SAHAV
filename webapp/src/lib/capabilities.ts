@@ -1,5 +1,5 @@
 import L from 'leaflet';
-import { getMap, getWorkspace, wmsUrlForWorkspace } from '../stores/mapStore';
+import { getMap, getWorkspace, wmsUrlForWorkspace, WMS_VERSION } from '../stores/mapStore';
 import type { LayerNode } from '../stores/configStore';
 
 // A GeoServer WMS layer or layer group, as discovered from GetCapabilities.
@@ -47,7 +47,7 @@ export function fetchCapabilitiesTree(workspace: string): Promise<CapabilitiesNo
   if (cached) return cached;
   const promise = (async () => {
     try {
-      const res = await fetch(`${wmsUrlForWorkspace(workspace)}?service=WMS&version=1.1.1&request=GetCapabilities`);
+      const res = await fetch(`${wmsUrlForWorkspace(workspace)}?service=WMS&version=${WMS_VERSION}&request=GetCapabilities`);
       const xml = await res.text();
       const doc = new DOMParser().parseFromString(xml, 'application/xml');
       const rootLayer = directChild(doc.getElementsByTagName('Capability')[0], 'Layer');

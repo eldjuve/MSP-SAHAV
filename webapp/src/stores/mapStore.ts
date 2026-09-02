@@ -6,9 +6,19 @@ export type LegendEntry = { layerId: string; service: string; name: string };
 
 // Override via VITE_GEOSERVER_URL in .env.local to point at the demo
 // GeoServer (see demo-geoserver/README.md — docker compose up in
-// demo-geoserver/) or any other instance without editing source.
-export const GEOSERVER_URL =
-  import.meta.env.VITE_GEOSERVER_URL ?? 'https://yourdomain.in/geoserver/MSPudhu/wms';
+// demo-geoserver/) or any other instance without editing source. No
+// workspace here — every layer/feature is qualified as "workspace:name",
+// so the workspace is always resolved per-layer via wmsUrlForWorkspace /
+// wfsUrlForWorkspace below, which lets nav.json span multiple workspaces.
+export const GEOSERVER_BASE_URL =
+  import.meta.env.VITE_GEOSERVER_URL ?? 'https://yourdomain.in/geoserver';
+
+// Pinned everywhere a WMS request is made (here, capabilities.ts, legend.ts)
+// rather than left to each caller's/Leaflet's own default: WMS 1.3.0 swaps
+// EPSG:4326's axis order to lat/lon, which would silently break every
+// bbox this app builds in lon/lat order. Bump this only alongside an audit
+// of every bbox-building call site.
+export const WMS_VERSION = '1.1.1';
 
 export const [basemap, setBasemap] = createSignal<BasemapType>(
   (sessionStorage.getItem('basemap') as BasemapType | null) ?? 'imagery',
@@ -42,7 +52,7 @@ const BASEMAP_TILES: Record<BasemapType, () => L.TileLayer> = {
 };
 
 export function initMapInstance(el: HTMLDivElement) {
-  if (_map) { _map.off(); _map.remove(); }
+  destroyMapInstance();
   _map = L.map(el, { zoomControl: false, zoomSnap: 0, zoomDelta: 0.25 }).setView(
     [11.96, 79.8],
     9,
@@ -57,6 +67,16 @@ export function initMapInstance(el: HTMLDivElement) {
   const resizeObserver = new ResizeObserver(() => map.invalidateSize());
   resizeObserver.observe(el);
   map.on('unload', () => resizeObserver.disconnect());
+}
+
+// Shared by initMapInstance (tearing down a previous instance before
+// creating the next) and MapContainer's onCleanup (unmount) — keeping both
+// paths in one place means getMap() never hands back a removed map.
+export function destroyMapInstance() {
+  if (!_map) return;
+  _map.off();
+  _map.remove();
+  _map = null;
 }
 
 export function applyBasemap(type: BasemapType) {
@@ -78,11 +98,12 @@ export function addWmsLayer(layerId: string, service: string, name: string) {
   // 0.7, stroke-opacity 1 — see ../../GEOSERVER_CHANGES.md), so the
   // rendered PNG's own alpha channel is already correct at full tile
   // opacity.
-  const layer = L.tileLayer.wms(GEOSERVER_URL, {
+  const layer = L.tileLayer.wms(wmsUrlForWorkspace(getWorkspace(service)), {
     layers: service,
     format: 'image/png',
     transparent: true,
-  } as L.WMSOptions);
+    version: WMS_VERSION,
+  });
   layer.addTo(_map);
   _addedLayers[layerId] = layer;
 
@@ -123,5 +144,9 @@ export function getWorkspace(service: string): string {
 }
 
 export function wmsUrlForWorkspace(workspace: string): string {
-  return GEOSERVER_URL.replace(/\/[^/]+\/wms$/, `/${workspace}/wms`);
+  return `${GEOSERVER_BASE_URL}/${workspace}/wms`;
+}
+
+export function wfsUrlForWorkspace(workspace: string): string {
+  return `${GEOSERVER_BASE_URL}/${workspace}/wfs`;
 }

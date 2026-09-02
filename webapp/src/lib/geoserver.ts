@@ -1,7 +1,5 @@
-import { GEOSERVER_URL, getLayerName } from '../stores/mapStore';
+import { getLayerName, getWorkspace, wfsUrlForWorkspace } from '../stores/mapStore';
 
-const WFS_BASE = GEOSERVER_URL.replace(/\/wms$/, '/wfs');
-const CHART_DATA_TYPENAME = 'MSPudhu:ChartData';
 const CHART_DATA_LOCAL_NAME = 'ChartData';
 
 export type BoxStats = { min: number; q1: number; median: number; q3: number; max: number };
@@ -34,27 +32,30 @@ function parseJsonbField<T>(value: T | string): T {
   return typeof value === 'string' ? JSON.parse(value) : value;
 }
 
-// A real map feature's chart_data is one row in `MSPudhu:ChartData`,
-// addressed by featureID rather than a CQL filter — the primary key is the
-// feature's own GeoServer layer name (its `service`, e.g.
-// "MSPudhu:District_Boundary" or "MSPudhu:Marine_Outfall"), with the
-// workspace prefix stripped. There's no separate editorial key to author —
-// whoever populates MSPudhu:ChartData decides which real feature a report
-// belongs to purely by choosing which service name to key it under.
+// A real map feature's chart_data is one row in that feature's own
+// workspace's `ChartData` layer, addressed by featureID rather than a CQL
+// filter — the primary key is the feature's own GeoServer layer name (its
+// `service`, e.g. "MSPudhu:District_Boundary" or "MSPudhu:Marine_Outfall"),
+// with the workspace prefix stripped. There's no separate editorial key to
+// author — whoever populates a workspace's ChartData decides which real
+// feature a report belongs to purely by choosing which service name to key
+// it under.
 export async function fetchFeatureCharts(service: string): Promise<ChartBundle[]> {
+  const workspace = getWorkspace(service);
   const localName = getLayerName(service);
   const params = new URLSearchParams({
     service: 'WFS', version: '2.0.0', request: 'GetFeature',
-    typeName: CHART_DATA_TYPENAME, outputFormat: 'application/json',
+    typeName: `${workspace}:${CHART_DATA_LOCAL_NAME}`, outputFormat: 'application/json',
     featureID: `${CHART_DATA_LOCAL_NAME}.${localName}`, propertyName: 'chart_data',
   });
   try {
-    const res = await fetch(`${WFS_BASE}?${params}`);
+    const res = await fetch(`${wfsUrlForWorkspace(workspace)}?${params}`);
     if (!res.ok) return [];
     const fc: { features?: { properties: { chart_data: ChartBundle[] | string } }[] } = await res.json();
     const raw = fc.features?.[0]?.properties.chart_data;
     return raw ? parseJsonbField<ChartBundle[]>(raw) : [];
-  } catch {
+  } catch (e) {
+    console.error(`Error fetching chart data for "${service}"`, e);
     return [];
   }
 }

@@ -1,6 +1,6 @@
 import { createResource, For, Show } from 'solid-js';
 import { legendEntries } from '../stores/mapStore';
-import { closePanel } from '../stores/uiStore';
+import { closePanel, mainContent } from '../stores/uiStore';
 import { fetchLegendClasses, type LegendClass, type LegendSwatch } from '../lib/legend';
 import type { LegendEntry } from '../stores/mapStore';
 
@@ -64,8 +64,10 @@ export function LegendPanel() {
   return (
     <div class="absolute top-4 right-25 bg-white rounded-xl shadow-md w-72 max-h-125 flex flex-col overflow-hidden">
       <div class="flex justify-between items-center bg-gray-100 px-2.5 py-2.5 rounded-t-xl font-bold">
-        <span>Legend</span>
-        <button onClick={closePanel} class="text-gray-600 hover:text-red-500">
+        {/* Same title the InfoSidebar heads with (see InfoSidebar.tsx) —
+            the currently-selected feature's own name, not a generic label. */}
+        <span>{mainContent()?.chapterHeader || mainContent()?.title || 'Legend'}</span>
+        <button onClick={closePanel} class="text-gray-600 hover:text-red-500" aria-label="Close legend">
           <i class="fas fa-times" />
         </button>
       </div>

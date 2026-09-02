@@ -3,8 +3,8 @@ import { sidebarOpen, setSidebarOpen, mainContent, chartReportOptions, selectedC
 import { ChartContainer } from './ChartContainer';
 
 export function InfoSidebar() {
-  const reports = () => chartReportOptions();
-  const selectedReport = () => reports()[Math.min(selectedChartIndex(), reports().length - 1)];
+  const selectedReport = () =>
+    chartReportOptions()[Math.min(selectedChartIndex(), chartReportOptions().length - 1)];
 
   return (
     <div
@@ -35,6 +35,7 @@ export function InfoSidebar() {
             <button
               class="border-none bg-none text-xl cursor-pointer text-gray-700 hover:text-red-500 px-2.5"
               onClick={() => setSidebarOpen(false)}
+              aria-label="Close info panel"
             >
               ×
             </button>
@@ -53,13 +54,13 @@ export function InfoSidebar() {
             )}
           </Show>
 
-          <Show when={reports().length > 1}>
+          <Show when={chartReportOptions().length > 1}>
             <select
               class="mb-3 w-full text-xs border border-gray-300 rounded px-2 py-1.5 bg-white"
               value={selectedChartIndex()}
               onChange={e => setSelectedChartIndex(Number(e.currentTarget.value))}
             >
-              <For each={reports()}>
+              <For each={chartReportOptions()}>
                 {(option, i) => <option value={i()}>{option.title}</option>}
               </For>
             </select>

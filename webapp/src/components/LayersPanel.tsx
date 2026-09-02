@@ -94,19 +94,17 @@ function LayerGroup(props: { node: LayerNode }) {
 }
 
 export function LayersPanel() {
-  const tree = () => layersTree();
-
   return (
     <div class="absolute top-4 right-25 bg-white rounded-xl shadow-md w-72 max-h-125 flex flex-col overflow-hidden">
       <div class="flex justify-between items-center bg-gray-100 px-2.5 py-2.5 rounded-t-xl font-bold">
         <span>Layers</span>
-        <button onClick={closePanel} class="text-gray-600 hover:text-red-500">
+        <button onClick={closePanel} class="text-gray-600 hover:text-red-500" aria-label="Close layers panel">
           <i class="fas fa-times" />
         </button>
       </div>
       <div class="overflow-y-auto p-2 flex-1">
-        <Show when={tree().length} fallback={<p class="text-sm text-gray-500 p-2">No layers loaded.</p>}>
-          <For each={tree()}>
+        <Show when={layersTree().length} fallback={<p class="text-sm text-gray-500 p-2">No layers loaded.</p>}>
+          <For each={layersTree()}>
             {node => node.Children?.length ? <LayerGroup node={node} /> : <LayerItem node={node} />}
           </For>
         </Show>
