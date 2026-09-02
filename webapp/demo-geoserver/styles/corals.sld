@@ -15,7 +15,7 @@
                                 <WellKnownName>star</WellKnownName>
                                 <Fill>
                                     <CssParameter name="fill">#1ec50b</CssParameter>
-                                </Fill>
+                                <CssParameter name="fill-opacity">0.7</CssParameter></Fill>
                             </Mark>
                             <Size>12</Size>
                         </Graphic>

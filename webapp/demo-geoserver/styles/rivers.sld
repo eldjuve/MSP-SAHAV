@@ -14,7 +14,7 @@
                             <CssParameter name="stroke-linecap">square</CssParameter>
                             <CssParameter name="stroke-linejoin">bevel</CssParameter>
                             <CssParameter name="stroke-width">2</CssParameter>
-                        </Stroke>
+                        <CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                     </LineSymbolizer>
                 </Rule>
                 <Rule>

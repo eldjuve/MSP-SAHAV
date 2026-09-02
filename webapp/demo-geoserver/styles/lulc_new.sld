@@ -18,11 +18,11 @@
                     <PolygonSymbolizer>
                         <Fill>
                             <CssParameter name="fill">#ffef95</CssParameter>
-                        </Fill>
+                        <CssParameter name="fill-opacity">0.7</CssParameter></Fill>
                         <Stroke>
                             <CssParameter name="stroke">#232323</CssParameter>
                             <CssParameter name="stroke-linejoin">bevel</CssParameter>
-                        </Stroke>
+                        <CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                     </PolygonSymbolizer>
                 </Rule>
                 <Rule>
@@ -37,11 +37,11 @@
                     <PolygonSymbolizer>
                         <Fill>
                             <CssParameter name="fill">#cf4513</CssParameter>
-                        </Fill>
+                        <CssParameter name="fill-opacity">0.7</CssParameter></Fill>
                         <Stroke>
                             <CssParameter name="stroke">#232323</CssParameter>
                             <CssParameter name="stroke-linejoin">bevel</CssParameter>
-                        </Stroke>
+                        <CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                     </PolygonSymbolizer>
                 </Rule>
                 <Rule>
@@ -56,11 +56,11 @@
                     <PolygonSymbolizer>
                         <Fill>
                             <CssParameter name="fill">#42ff6a</CssParameter>
-                        </Fill>
+                        <CssParameter name="fill-opacity">0.7</CssParameter></Fill>
                         <Stroke>
                             <CssParameter name="stroke">#232323</CssParameter>
                             <CssParameter name="stroke-linejoin">bevel</CssParameter>
-                        </Stroke>
+                        <CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                     </PolygonSymbolizer>
                 </Rule>
                 <Rule>
@@ -75,11 +75,11 @@
                     <PolygonSymbolizer>
                         <Fill>
                             <CssParameter name="fill">#5ebc04</CssParameter>
-                        </Fill>
+                        <CssParameter name="fill-opacity">0.7</CssParameter></Fill>
                         <Stroke>
                             <CssParameter name="stroke">#232323</CssParameter>
                             <CssParameter name="stroke-linejoin">bevel</CssParameter>
-                        </Stroke>
+                        <CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                     </PolygonSymbolizer>
                 </Rule>
                 <Rule>
@@ -94,11 +94,11 @@
                     <PolygonSymbolizer>
                         <Fill>
                             <CssParameter name="fill">#c6e67f</CssParameter>
-                        </Fill>
+                        <CssParameter name="fill-opacity">0.7</CssParameter></Fill>
                         <Stroke>
                             <CssParameter name="stroke">#232323</CssParameter>
                             <CssParameter name="stroke-linejoin">bevel</CssParameter>
-                        </Stroke>
+                        <CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                     </PolygonSymbolizer>
                 </Rule>
                 <Rule>
@@ -113,11 +113,11 @@
                     <PolygonSymbolizer>
                         <Fill>
                             <CssParameter name="fill">#0e7f05</CssParameter>
-                        </Fill>
+                        <CssParameter name="fill-opacity">0.7</CssParameter></Fill>
                         <Stroke>
                             <CssParameter name="stroke">#232323</CssParameter>
                             <CssParameter name="stroke-linejoin">bevel</CssParameter>
-                        </Stroke>
+                        <CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                     </PolygonSymbolizer>
                 </Rule>
                 <Rule>
@@ -132,11 +132,11 @@
                     <PolygonSymbolizer>
                         <Fill>
                             <CssParameter name="fill">#24e6ed</CssParameter>
-                        </Fill>
+                        <CssParameter name="fill-opacity">0.7</CssParameter></Fill>
                         <Stroke>
                             <CssParameter name="stroke">#232323</CssParameter>
                             <CssParameter name="stroke-linejoin">bevel</CssParameter>
-                        </Stroke>
+                        <CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                     </PolygonSymbolizer>
                 </Rule>
                 <Rule>
@@ -151,11 +151,11 @@
                     <PolygonSymbolizer>
                         <Fill>
                             <CssParameter name="fill">#8e921d</CssParameter>
-                        </Fill>
+                        <CssParameter name="fill-opacity">0.7</CssParameter></Fill>
                         <Stroke>
                             <CssParameter name="stroke">#232323</CssParameter>
                             <CssParameter name="stroke-linejoin">bevel</CssParameter>
-                        </Stroke>
+                        <CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                     </PolygonSymbolizer>
                 </Rule>
             </FeatureTypeStyle>

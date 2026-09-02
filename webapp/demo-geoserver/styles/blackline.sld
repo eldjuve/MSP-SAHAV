@@ -10,7 +10,7 @@
                 <Rule>
                     <Title>black line</Title>
                     <LineSymbolizer>
-                        <Stroke />
+                        <Stroke><CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                     </LineSymbolizer>
                 </Rule>
             </FeatureTypeStyle>

@@ -14,23 +14,18 @@ export interface LayerNode {
 export interface NavEntryConfig {
   label: string;
   layer?: string;
-  link?: string;            // opens externally instead of selecting a layer
   items?: NavEntryConfig[];
 }
 
-// The raw shape of nav.json: one root per top nav key. `layer` is a
-// GeoServer group whose children are auto-discovered as flat leaves
-// (bundles or single features); `submenus` names which of those layers
-// (anywhere in the discovered tree) should expand into a further nav
-// submenu instead of staying a flat leaf — everything not listed stays a
-// bundle/single feature automatically. `items` adds hardcoded entries
-// GetCapabilities can't produce (an external link, or a leaf that needs a
-// label different from its layer's own title), merged in alongside
-// whatever was discovered.
+// The raw shape of nav.json: one root per top nav key, naming a GeoServer
+// group whose children are auto-discovered as flat leaves (bundles or
+// single features). `submenus` names which of those layers (anywhere in
+// the discovered tree) should expand into a further nav submenu instead of
+// staying a flat leaf — everything not listed stays a bundle/single
+// feature automatically.
 export interface NavRootConfig {
-  layer?: string;
+  layer: string;
   submenus?: string[];
-  items?: NavEntryConfig[];
 }
 
 export type NavFile = Record<string, NavRootConfig>;
@@ -55,16 +50,11 @@ async function discoverChildren(layer: string, submenus: Set<string>): Promise<N
   }));
 }
 
-async function resolveNavRoot(root: NavRootConfig): Promise<NavEntryConfig[]> {
-  const discovered = root.layer ? await discoverChildren(root.layer, new Set(root.submenus)) : [];
-  return [...discovered, ...(root.items ?? [])];
-}
-
 export async function loadAllConfig() {
   const rawNav: NavFile = await fetch('/config/nav.json').then(r => r.json());
   const nav: NavConfig = {};
   await Promise.all(Object.entries(rawNav).map(async ([key, root]) => {
-    nav[key] = await resolveNavRoot(root);
+    nav[key] = await discoverChildren(root.layer, new Set(root.submenus));
   }));
   setConfigState({ nav, loaded: true });
 }

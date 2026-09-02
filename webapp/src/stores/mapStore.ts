@@ -4,28 +4,6 @@ import L from 'leaflet';
 export type BasemapType = 'satellite' | 'imagery' | 'topo';
 export type LegendEntry = { layerId: string; service: string; name: string };
 
-const LAYERS_NOT_TRANSPARENT = new Set([
-  'MSPudhu:Marine_Outfall', 'MSPudhu:VillageNames', 'MSPudhu:Tourism_Activity',
-  'MSPudhu:Crab_locations', 'MSPudhu:Archeological_Site', 'MSPudhu:Coastal_Protection_Structures',
-  'MSPudhu:CRZ', 'MSPudhu:Rock_Revetment_points', 'MSPudhu:Groynes', 'MSPudhu:Lighthouse',
-  'MSPudhu:Jetty or Breakwater', 'MSPudhu:Placenames', 'MSPudhu:Port', 'MSPudhu:Port Area',
-  'MSPudhu:Railway Line', 'MSPudhu:Lines', 'MSPudhu:Points', 'MSPudhu:SurveyPlotNumbers',
-  'MSPudhu:Road', 'MSPudhu:Hazard_Line', 'MSPudhu:Multi_Hazard_Line',
-  'MSPudhu:Government_Quarter', 'MSPudhu:Govt_Office', 'MSPudhu:Grave', 'MSPudhu:Dams',
-  'MSPudhu:Park_Area', 'MSPudhu:Bus_Stations', 'MSPudhu:Banks', 'MSPudhu:Major_Road_Network',
-  'MSPudhu:Major_Landmarks', 'MSPudhu:Power_Mainline', 'MSPudhu:Open_Drain',
-  'MSPudhu:Religious_Place', 'MSPudhu:Pump_House_Area', 'MSPudhu:Playground_Area',
-  'MSPudhu:Rail_Culvert', 'MSPudhu:Railway_Station', 'MSPudhu:Police_Stations',
-  'MSPudhu:Road_Bridges', 'MSPudhu:Veterinary_Hospitals', 'MSPudhu:Stadium_Locations',
-  'MSPudhu:Substation_Locations', 'MSPudhu:Traffic_Signal_Locations',
-  'MSPudhu:Under_water_cable-UT_Pondy', 'MSPudhu:Underwater_Cable-Under_Construction',
-  'MSPudhu:Bathymetry_10m', 'MSPudhu:Sandy_Beach', 'MSPudhu:Sandy_Spit', 'MSPudhu:River',
-  'MSPudhu:District_Boundary', 'MSPudhu:Corals', 'MSPudhu:Biodiversity_Hotspots',
-  'MSPudhu:Turtle_Nesting_Ground', 'MSPudhu:Tourism_Boating', 'MSPudhu:Tourist_Beach_Puducherry',
-  'MSPudhu:Beach_Resorts', 'MSPudhu:Coastal_Amenities', 'MSPudhu:Scuba_Diving_Locations',
-  'MSPudhu:Sports_Activities', 'MSPudhu:Sand_Dune', 'MSPudhu:SandSpit',
-]);
-
 // Override via VITE_GEOSERVER_URL in .env.local to point at the demo
 // GeoServer (see demo-geoserver/README.md — docker compose up in
 // demo-geoserver/) or any other instance without editing source.
@@ -96,12 +74,15 @@ export function changeBasemap(type: BasemapType) {
 
 export function addWmsLayer(layerId: string, service: string, name: string) {
   if (!_map || _addedLayers[layerId]) return;
+  // Each layer's own SLD bakes in its fill/stroke opacity (fill-opacity
+  // 0.7, stroke-opacity 1 — see ../../GEOSERVER_CHANGES.md), so the
+  // rendered PNG's own alpha channel is already correct at full tile
+  // opacity.
   const layer = L.tileLayer.wms(GEOSERVER_URL, {
     layers: service,
     format: 'image/png',
     transparent: true,
   } as L.WMSOptions);
-  layer.setOpacity(LAYERS_NOT_TRANSPARENT.has(service) ? 1 : 0.7);
   layer.addTo(_map);
   _addedLayers[layerId] = layer;
 

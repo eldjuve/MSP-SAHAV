@@ -17,11 +17,11 @@
                             <Mark>
                                 <Fill>
                                     <CssParameter name="fill">#db1be7</CssParameter>
-                                </Fill>
+                                <CssParameter name="fill-opacity">0.7</CssParameter></Fill>
                                 <Stroke>
                                     <CssParameter name="stroke">#894fdb</CssParameter>
                                     <CssParameter name="stroke-width">2</CssParameter>
-                                </Stroke>
+                                <CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                             </Mark>
                             <Size>14</Size>
                         </Graphic>

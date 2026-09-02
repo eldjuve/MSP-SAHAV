@@ -15,7 +15,7 @@
                                 <WellKnownName>triangle</WellKnownName>
                                 <Fill>
                                     <CssParameter name="fill">#d34e0a</CssParameter>
-                                </Fill>
+                                <CssParameter name="fill-opacity">0.7</CssParameter></Fill>
                             </Mark>
                             <Size>6</Size>
                         </Graphic>

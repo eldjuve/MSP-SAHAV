@@ -18,3 +18,7 @@ VillageBoundary	Village Boundaries
 # for the fallback to split on, so they'd otherwise show unspaced.
 VillageNames	Village Names
 SandSpit	Sand Spit
+# Also not from Multi_DataTree.json — nav.json's "Status Indicators" entry
+# for this layer is editorially "Marine Pollution", not the outfall's own
+# name, now that it's discovered via the StatusIndicators group.
+Marine_Outfall	Marine Pollution

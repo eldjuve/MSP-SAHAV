@@ -15,10 +15,10 @@
                                 <WellKnownName>circle</WellKnownName>
                                 <Fill>
                                     <CssParameter name="fill">#FFFFFF</CssParameter>
-                                </Fill>
+                                <CssParameter name="fill-opacity">0.7</CssParameter></Fill>
                                 <Stroke>
                                     <CssParameter name="stroke-width">2</CssParameter>
-                                </Stroke>
+                                <CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                             </Mark>
                             <Size>6</Size>
                         </Graphic>

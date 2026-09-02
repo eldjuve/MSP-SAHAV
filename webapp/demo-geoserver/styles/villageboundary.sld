@@ -11,7 +11,7 @@
                     <PolygonSymbolizer>
                         <Fill>
                             <CssParameter name="fill">#080bed</CssParameter>
-                        </Fill>
+                        <CssParameter name="fill-opacity">0.7</CssParameter></Fill>
                         <Stroke>
                             <CssParameter name="stroke">#ffffff</CssParameter>
                             <CssParameter name="stroke-linejoin">bevel</CssParameter>

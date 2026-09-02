@@ -12,7 +12,7 @@
                         <Stroke>
                             <CssParameter name="stroke">#e8e6e6</CssParameter>
                             <CssParameter name="stroke-linejoin">bevel</CssParameter>
-                        </Stroke>
+                        <CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                     </PolygonSymbolizer>
                 </Rule>
             </FeatureTypeStyle>

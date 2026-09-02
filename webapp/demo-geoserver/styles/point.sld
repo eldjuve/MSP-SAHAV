@@ -17,7 +17,7 @@
                             <Mark>
                                 <Fill>
                                     <CssParameter name="fill">#FF0000</CssParameter>
-                                </Fill>
+                                <CssParameter name="fill-opacity">0.7</CssParameter></Fill>
                             </Mark>
                             <Size>6</Size>
                         </Graphic>

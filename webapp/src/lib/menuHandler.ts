@@ -17,12 +17,6 @@ import {
 const PUDUCHERRY_CENTER: [number, number] = [11.91, 79.78];
 
 export async function handleMenuItemClick(item: NavEntryConfig) {
-  // An external link instead of a real GeoServer layer.
-  if (item.link) {
-    window.open(item.link, '_blank');
-    return;
-  }
-
   clearAllWmsLayers();
 
   if (!item.layer) {

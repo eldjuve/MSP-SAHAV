@@ -18,11 +18,11 @@
                     <PolygonSymbolizer>
                         <Fill>
                             <CssParameter name="fill">#5287eb</CssParameter>
-                        </Fill>
+                        <CssParameter name="fill-opacity">0.7</CssParameter></Fill>
                         <Stroke>
                             <CssParameter name="stroke">#232323</CssParameter>
                             <CssParameter name="stroke-linejoin">bevel</CssParameter>
-                        </Stroke>
+                        <CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                     </PolygonSymbolizer>
                 </Rule>
                 <Rule>
@@ -37,11 +37,11 @@
                     <PolygonSymbolizer>
                         <Fill>
                             <CssParameter name="fill">#d24a65</CssParameter>
-                        </Fill>
+                        <CssParameter name="fill-opacity">0.7</CssParameter></Fill>
                         <Stroke>
                             <CssParameter name="stroke">#232323</CssParameter>
                             <CssParameter name="stroke-linejoin">bevel</CssParameter>
-                        </Stroke>
+                        <CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                     </PolygonSymbolizer>
                 </Rule>
                 <Rule>
@@ -56,11 +56,11 @@
                     <PolygonSymbolizer>
                         <Fill>
                             <CssParameter name="fill">#5dc95e</CssParameter>
-                        </Fill>
+                        <CssParameter name="fill-opacity">0.7</CssParameter></Fill>
                         <Stroke>
                             <CssParameter name="stroke">#232323</CssParameter>
                             <CssParameter name="stroke-linejoin">bevel</CssParameter>
-                        </Stroke>
+                        <CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                     </PolygonSymbolizer>
                 </Rule>
             </FeatureTypeStyle>

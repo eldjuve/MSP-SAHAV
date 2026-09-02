@@ -14,10 +14,10 @@
                                 <WellKnownName>circle</WellKnownName>
                                 <Fill>
                                     <CssParameter name="fill">#ffffff</CssParameter>
-                                </Fill>
+                                <CssParameter name="fill-opacity">0.7</CssParameter></Fill>
                                 <Stroke>
                                     <CssParameter name="stroke">#00005e</CssParameter>
-                                </Stroke>
+                                <CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                             </Mark>
                             <Size>12</Size>
                         </Graphic>
@@ -28,10 +28,10 @@
                                 <WellKnownName>circle</WellKnownName>
                                 <Fill>
                                     <CssParameter name="fill">#0700c8</CssParameter>
-                                </Fill>
+                                <CssParameter name="fill-opacity">0.7</CssParameter></Fill>
                                 <Stroke>
                                     <CssParameter name="stroke">#4a35d2</CssParameter>
-                                </Stroke>
+                                <CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                             </Mark>
                             <Size>5</Size>
                         </Graphic>

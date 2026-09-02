@@ -102,5 +102,13 @@ fix the member name or drop it from that group's member list in the script.
   so rendering has no external dependency, and renaming `ns1` to `xlink`
   throughout. The fixed `.sld` files are committed, so this doesn't recur
   on a fresh `apply-styles.sh` run.
+- **Every style's `fill-opacity`/`stroke-opacity` was set to `0.7`/`1`**
+  (translucent fills, crisp outlines — see `../GEOSERVER_CHANGES.md`'s
+  "Layer opacity" section), replacing a frontend `LAYERS_NOT_TRANSPARENT`
+  list that hardcoded per-layer opacity. The `.sld` files are committed
+  with this baked in — recovering and re-running `fetch-styles.py` (see the
+  note above the script table) would pull pristine copies from the live
+  server and lose it, so re-apply the same fill-opacity/stroke-opacity
+  convention to whatever changed if you do.
 - To tear down: `docker compose down` (add `-v` to also drop the data
   volumes and start fresh next time).

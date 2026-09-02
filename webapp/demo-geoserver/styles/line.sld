@@ -15,7 +15,7 @@
                     <LineSymbolizer>
                         <Stroke>
                             <CssParameter name="stroke">#0000FF</CssParameter>
-                        </Stroke>
+                        <CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                     </LineSymbolizer>
                 </Rule>
             </FeatureTypeStyle>

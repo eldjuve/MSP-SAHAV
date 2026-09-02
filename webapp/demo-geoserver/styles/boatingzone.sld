@@ -23,15 +23,15 @@
                                         <WellKnownName>horline</WellKnownName>
                                         <Stroke>
                                             <CssParameter name="stroke">#ddac43</CssParameter>
-                                        </Stroke>
+                                        <CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                                     </Mark>
                                 </Graphic>
                             </GraphicFill>
-                        </Fill>
+                        <CssParameter name="fill-opacity">0.7</CssParameter></Fill>
                         <Stroke>
                             <CssParameter name="stroke">#232323</CssParameter>
                             <CssParameter name="stroke-linejoin">bevel</CssParameter>
-                        </Stroke>
+                        <CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                     </PolygonSymbolizer>
                 </Rule>
                 <Rule>
@@ -51,15 +51,15 @@
                                         <WellKnownName>horline</WellKnownName>
                                         <Stroke>
                                             <CssParameter name="stroke">#1f1424</CssParameter>
-                                        </Stroke>
+                                        <CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                                     </Mark>
                                 </Graphic>
                             </GraphicFill>
-                        </Fill>
+                        <CssParameter name="fill-opacity">0.7</CssParameter></Fill>
                         <Stroke>
                             <CssParameter name="stroke">#232323</CssParameter>
                             <CssParameter name="stroke-linejoin">bevel</CssParameter>
-                        </Stroke>
+                        <CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                     </PolygonSymbolizer>
                 </Rule>
             </FeatureTypeStyle>

@@ -27,29 +27,28 @@ Three things must happen on the GeoServer side before the app works:
 Repository, Status Indicators, Conflicts, Services):
 
 ```ts
-{ layer?: string, submenus?: string[], items?: NavEntry[] }
+{ layer: string, submenus?: string[] }
 ```
 
-**Nothing here names an individual leaf layer — only which layers should
-become submenus.** `layer` is a GeoServer group whose children are
-auto-discovered from `GetCapabilities` at load time (see `discoverChildren`
-in `src/stores/configStore.ts`). By default every discovered child becomes
-a flat, clickable entry — a bundle or single feature, exactly like before.
-`submenus` is an allowlist of layer names (checked at every level of the
-discovered tree, so it applies recursively) that should instead expand into
-a further nav submenu; everything not listed stays flat automatically, with
-no frontend change needed when GeoServer's own grouping changes.
+**Nothing here names an individual leaf layer.** Every root names a
+GeoServer group; its children are auto-discovered from `GetCapabilities` at
+load time (see `discoverChildren` in `src/stores/configStore.ts`). By
+default every discovered child becomes a flat, clickable entry — a bundle
+or single feature, exactly like before. `submenus` is an allowlist of layer
+names (checked at every level of the discovered tree, so it applies
+recursively) that should instead expand into a further nav submenu;
+everything not listed stays flat automatically, with no frontend change
+needed when GeoServer's own grouping changes.
 
-`items` adds hardcoded entries alongside whatever was discovered, for the
-two things `GetCapabilities` genuinely can't produce: an external link
-("INCOIS Services"), or a leaf that needs a label different from its
-layer's own title ("Water Quality" reuses the plain `District_Boundary`
-layer, so it can't just take that layer's own generic title). Sections with
-nothing worth discovering (Conflicts, Services) skip `layer`/`submenus`
-entirely and are just a flat `items` list.
+Status Indicators, Conflicts, and Services each root at a thin wrapper
+group created purely so they have something to discover from — see
+`StatusIndicators`/`Conflicts`/`Services` in the table below. "INCOIS
+Services" isn't part of this at all any more: it's a plain external link,
+hardcoded in `src/components/TopBar.tsx` rather than routed through
+`nav.json`/GetCapabilities.
 
-Clicking a resolved leaf (an entry with `layer` but no `items`) fetches
-that `layer`'s node from GetCapabilities, then:
+Clicking a resolved leaf fetches that `layer`'s node from GetCapabilities,
+then:
 
 - sets the map view to that layer's own bounding box,
 - builds the Layers panel tree from its children (if it's a layer group —
@@ -67,9 +66,6 @@ same as today's Layers-panel behavior). Almost every existing nav item maps
 to a layer group, because today's `Multi_DataTree.json` trees always bundle
 a base `District_Boundary` layer with one or more topic layers — that's
 exactly what a GeoServer layer group is for.
-
-`link` opens an external URL instead of selecting a layer (no `layer`
-needed on that entry) — used for "INCOIS Services".
 
 **The water-quality buoy is a real point feature, not frontend
 decoration.** The old app drew it as a static Leaflet marker with a
@@ -91,16 +87,18 @@ layer's own name (e.g. "Coral Reefs" can't be named `MSPudhu:Corals` since
 that's already the name of its own child layer). Rename freely — `nav.json`
 is the only place that needs to agree with whatever you actually call them.
 
-Five of these are new **nested** groups with no `Multi_DataTree.json`
-counterpart at all — they only ever existed as hardcoded structure in
-`datarepo.json` (or, for `MSPudhu:DataRepository`, didn't exist as a
-concept at all — the frontend used to just hardcode all 8 of its children
-directly). For discovery to work, each needs to be created as a GeoServer
-layer group whose own members are the *other* groups from this table (e.g.
-`MSPudhu:Ecology`'s members are `MSPudhu:Mangroves`, `MSPudhu:Coral_Reefs`,
-etc. — GeoServer supports nesting layer groups this way), and each of the
-four listed in `nav.json`'s `submenus` must be a **direct** member of
-`MSPudhu:DataRepository` for it to be discovered and expanded correctly.
+Eight of these are new **nested** groups with no `Multi_DataTree.json`
+counterpart at all: `MSPudhu:DataRepository`, `MSPudhu:Environment`,
+`MSPudhu:Ecology`, `MSPudhu:Human_Activities`, `MSPudhu:Socio_Economic`,
+`MSPudhu:StatusIndicators`, `MSPudhu:Conflicts`, and `MSPudhu:Services`.
+Each needs to be created as a GeoServer layer group whose own members are
+*other* groups (or, for `StatusIndicators`, a single plain layer) from this
+table — GeoServer supports nesting layer groups this way — and each of the
+four `MSPudhu:DataRepository` members listed in `nav.json`'s `submenus`
+must be a **direct** member of it for discovery to expand it correctly.
+`StatusIndicators`, `Conflicts`, and `Services` exist purely as anchors for
+`nav.json`'s other three top-level entries to discover from — none of
+their own members need expanding into a further submenu.
 
 | nav label | proposed layer/group | should contain |
 |---|---|---|
@@ -126,16 +124,34 @@ four listed in `nav.json`'s `submenus` must be a **direct** member of
 | Surface Boat Sports | `MSPudhu:Surface_Boats` | District_Boundary, Sports_Activities |
 | Scuba Diving | `MSPudhu:Scuba` | District_Boundary, Scuba_Diving_Locations |
 | Coastal Inundation Risk | `MSPudhu:Risk` | District_Boundary, CIRA_PY_final |
-| Marine Pollution | `MSPudhu:Marine_Outfall` | (already a single real layer — no group needed) |
+| *(Status Indicators root, new)* | `MSPudhu:StatusIndicators` | `MSPudhu:Marine_Outfall` |
+| Marine Pollution | `MSPudhu:Marine_Outfall` | (already a single real layer — no group of its own needed, just a title override so it discovers as "Marine Pollution" rather than "Marine Outfall" — see `layer-title-overrides.tsv`) |
+| *(Services root, new)* | `MSPudhu:Services` | `MSPudhu:Vulnerability` |
 | Vulnerability | `MSPudhu:Vulnerability` | District_Boundary, Multi_Hazard_Line, Tsunami_Water_Level |
+| *(Conflicts root, new)* | `MSPudhu:Conflicts` | `MSPudhu:Ecology_vs_Human_Activities`, `MSPudhu:Tourism_vs_Shoreline_Group`, `MSPudhu:Fisheries_vs_Tourism` |
 | Ecology vs Human Activities | `MSPudhu:Ecology_vs_Human_Activities` | District_Boundary, Mangrove_BoatingConflict, Mangrove, Crab_locations, Tourism_Activity |
 | Tourism vs Shoreline | `MSPudhu:Tourism_vs_Shoreline_Group` | District_Boundary, Tourism_vs_Shoreline, Tourist_Beach_Puducherry, Beach_Resorts, Coastal_Amenities |
 | Fisheries vs Tourism | `MSPudhu:Fisheries_vs_Tourism` | District_Boundary, Tourism_vs_Fisheries, Coastal_Amenities |
-| Water Quality | `MSPudhu:District_Boundary` | (reuses the plain boundary layer — no group needed) |
 
-Two files that were already unreferenced *before* this change —
-`public/config/ecology.json` and `public/config/socioeconomic.json` — are
-unrelated pre-existing dead config, left untouched.
+"Water Quality" (a nav entry that reused the plain `District_Boundary`
+layer under a different label) was dropped — it duplicated the same
+feature already reachable via Boundaries, Water Resources, and most other
+Data Repository entries.
+
+## Layer opacity is set in each SLD, not the frontend
+
+Every style's `Fill`/`Stroke` `CssParameter`s should set `fill-opacity` to
+`0.7` and `stroke-opacity` to `1` — translucent fills so the basemap shows
+through, crisp opaque outlines. The frontend used to hardcode which ~40 of
+the ~80 layers got full opacity in a `LAYERS_NOT_TRANSPARENT` set; that's
+gone now, so a layer whose SLD doesn't set these renders at GeoServer's own
+default (fully opaque fill), not the translucent look the rest of the app
+has.
+
+A rule that deliberately sets some other opacity (e.g. `0`, for an
+invisible helper polygon backing a label-only layer like `VillageNames`)
+should be left alone — this convention is about the *unset, implicitly-1.0*
+case, not a blanket override.
 
 ## Charts are attached to selected features, not menu items
 
@@ -161,10 +177,10 @@ name to key its `MSPudhu:ChartData` row under. In particular:
 
 - **Weather parameters** (Precipitation, Humidity, Airtemperature min/max,
   Cloud Cover, Pressure, Wind Speed) fit naturally as multiple reports keyed
-  under `District_Boundary` — since "Water Quality" already selects that
-  feature, its row's `chart_data` array can hold the weather reports *and*
-  the water-quality reports side by side; the sidebar picker lets the user
-  choose between them.
+  under `District_Boundary` — nearly every Data Repository entry selects
+  that feature as part of its bundle, so its row's `chart_data` array can
+  hold the weather reports *and* the water-quality reports side by side;
+  the sidebar picker lets the user choose between them.
 - **Fisheries** and **Tourism** had no distinct map feature at all in the
   old config. `Fishingzones` (Fish Potential Sites) is a natural fit for
   fisheries; tourism doesn't have an obvious existing candidate — pick

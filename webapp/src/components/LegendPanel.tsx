@@ -27,23 +27,36 @@ function Swatch(props: { swatch: LegendSwatch }) {
 
 function LegendEntryRow(props: { entry: LegendEntry }) {
   const [classes] = createResource(() => props.entry.service, fetchLegendClasses);
+  // A single class needs no header of its own — just its swatch labeled
+  // with the layer name.
+  const multiClass = () => (classes()?.length ?? 0) > 1;
 
   return (
-    <div class="mb-3">
-      <div class="font-semibold text-xs mb-1">{props.entry.name}</div>
-      <div class="flex flex-col gap-1">
-        <For each={classes()}>
-          {(cls: LegendClass) => (
-            <div class="flex items-center gap-2">
-              <Swatch swatch={cls.swatch} />
-              <Show when={cls.title}>
-                <span class="text-xs">{cls.title}</span>
-              </Show>
-            </div>
-          )}
-        </For>
+    <Show
+      when={multiClass()}
+      fallback={
+        <div class="mb-3 flex items-center gap-2">
+          <Show when={classes()?.[0]}>{cls => <Swatch swatch={cls().swatch} />}</Show>
+          <span class="text-xs">{props.entry.name}</span>
+        </div>
+      }
+    >
+      <div class="mb-3">
+        <div class="font-semibold text-xs mb-1">{props.entry.name}</div>
+        <div class="flex flex-col gap-1">
+          <For each={classes()}>
+            {(cls: LegendClass) => (
+              <div class="flex items-center gap-2">
+                <Swatch swatch={cls.swatch} />
+                <Show when={cls.title}>
+                  <span class="text-xs">{cls.title}</span>
+                </Show>
+              </div>
+            )}
+          </For>
+        </div>
       </div>
-    </div>
+    </Show>
   );
 }
 

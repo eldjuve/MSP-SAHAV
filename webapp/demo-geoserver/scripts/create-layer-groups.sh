@@ -19,8 +19,18 @@ WS="MSPudhu"
 # create_group <name> <title> <abstract> <type:localName> [<type:localName> ...]
 # <type> is "layer" for a raw published layer or "layerGroup" for another
 # group created earlier in this script.
+xml_escape() {
+  local s="$1"
+  s="${s//&/&amp;}"
+  s="${s//</&lt;}"
+  s="${s//>/&gt;}"
+  printf '%s' "$s"
+}
+
 create_group() {
-  local name="$1" title="$2" abstract="$3"
+  local name="$1" title abstract
+  title=$(xml_escape "$2")
+  abstract=$(xml_escape "$3")
   shift 3
   local publishables=""
   for m in "$@"; do
@@ -145,6 +155,23 @@ create_group "Human_Activities" "Human Activities" \
 create_group "Socio_Economic" "Socio Economic" \
   "Socio-economic activity layers for the Puducherry region." \
   "layerGroup:Coastal_Aquaculture" "layerGroup:Surface_Boats" "layerGroup:Scuba"
+
+echo "== top nav anchors =="
+# nav.json's other three top-level nav entries need a real group to discover
+# from too (see public/config/nav.json), the same way DataRepository anchors
+# "Data Repository" below — a single-member group is unusual but valid.
+
+create_group "StatusIndicators" "Status Indicators" \
+  "Status indicator layers for the Puducherry region." \
+  "layer:Marine_Outfall"
+
+create_group "Conflicts" "Conflicts & Compatibilities" \
+  "Conflicts between marine spatial planning activities in the Puducherry region." \
+  "layerGroup:Ecology_vs_Human_Activities" "layerGroup:Tourism_vs_Shoreline_Group" "layerGroup:Fisheries_vs_Tourism"
+
+create_group "Services" "Services" \
+  "Service layers for the Puducherry region." \
+  "layerGroup:Vulnerability"
 
 echo "== data repository root =="
 

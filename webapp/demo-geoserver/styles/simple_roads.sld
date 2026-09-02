@@ -14,7 +14,7 @@
                         <Stroke>
                             <CssParameter name="stroke">#AA3333</CssParameter>
                             <CssParameter name="stroke-width">2</CssParameter>
-                        </Stroke>
+                        <CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                     </LineSymbolizer>
                 </Rule>
             </FeatureTypeStyle>

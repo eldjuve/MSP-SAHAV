@@ -18,7 +18,7 @@
                         </Fill>
                         <Stroke>
                             <CssParameter name="stroke">#9c9595</CssParameter>
-                        </Stroke>
+                        <CssParameter name="stroke-opacity">1</CssParameter></Stroke>
                     </PolygonSymbolizer>
                 </Rule>
             </FeatureTypeStyle>
