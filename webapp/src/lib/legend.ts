@@ -25,15 +25,21 @@ type RawLegendResponse = { Legend?: { rules?: RawRule[] }[] };
 function toSwatch(symbolizers: RawSymbolizer[] | undefined): LegendSwatch | null {
   for (const s of symbolizers ?? []) {
     if ('Polygon' in s) {
-      return { kind: 'polygon', fill: s.Polygon.fill ?? 'transparent', stroke: s.Polygon.stroke ?? '#666' };
+      return {
+        kind: 'polygon',
+        fill: s.Polygon.fill ?? 'transparent',
+        stroke: s.Polygon.stroke ?? '#666',
+      };
     }
     if ('Point' in s) {
       // A point styled with a custom icon (e.g. an SVG pin) lists the icon
       // graphic first and a synthetic vector "mark" (fill/stroke) second, as
-      // a fallback for clients that can't render external graphics. The
-      // icon itself isn't usable here — GeoServer only serves it from its
-      // REST API, which requires admin credentials — so use the mark.
-      const mark = s.Point.graphics?.find(g => g.fill) ?? s.Point.graphics?.[0];
+      // a fallback for clients that can't render external graphics. GeoServer
+      // does serve the icon itself from a public, unauthenticated endpoint
+      // (external-graphic-url, e.g. /geoserver/kml/icon/<ws>/<style>) — using
+      // it instead of the mark would be a real UI improvement, just not one
+      // this fetcher does today, so use the mark for now.
+      const mark = s.Point.graphics?.find((g) => g.fill) ?? s.Point.graphics?.[0];
       return { kind: 'point', fill: mark?.fill ?? 'transparent', stroke: mark?.stroke ?? '#666' };
     }
     if ('Line' in s) {
@@ -59,8 +65,11 @@ export function fetchLegendClasses(service: string): Promise<LegendClass[]> {
   if (cached) return cached;
   const promise = (async () => {
     const params = new URLSearchParams({
-      service: 'WMS', version: WMS_VERSION, request: 'GetLegendGraphic',
-      format: 'application/json', layer: service,
+      service: 'WMS',
+      version: WMS_VERSION,
+      request: 'GetLegendGraphic',
+      format: 'application/json',
+      layer: service,
     });
     try {
       const res = await fetch(`${wmsUrlForWorkspace(getWorkspace(service))}?${params}`);

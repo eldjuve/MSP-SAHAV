@@ -8,12 +8,7 @@ import {
 } from '../stores/mapStore';
 import { fetchCapabilitiesNode, toLayerNode } from './capabilities';
 import { getAllLeafNodes } from './layerTree';
-import {
-  setSidebarContent,
-  setSidebarOpen,
-  openPanel,
-  setNavLoading,
-} from '../stores/uiStore';
+import { setSidebarContent, setSidebarOpen, openPanel, setNavLoading } from '../stores/uiStore';
 
 const PUDUCHERRY_CENTER: [number, number] = [11.91, 79.78];
 
@@ -64,7 +59,9 @@ export async function handleMenuItemClick(item: NavEntryConfig) {
   // Select every real sublayer this feature has — MapContainer's
   // layer-selection effect adds each as a WMS layer and tries to fetch its
   // chart_data.
-  const idsToSelect = getAllLeafNodes(tree).filter(n => n.service).map(n => n.Number);
+  const idsToSelect = getAllLeafNodes(tree)
+    .filter((n) => n.service)
+    .map((n) => n.Number);
   setSelectedLayerIds(idsToSelect);
   openPanel('legend');
 

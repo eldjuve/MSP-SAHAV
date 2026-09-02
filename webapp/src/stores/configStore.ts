@@ -34,18 +34,22 @@ export type NavConfig = Record<string, NavEntryConfig[]>;
 async function discoverChildren(layer: string, submenus: Set<string>): Promise<NavEntryConfig[]> {
   const node = await fetchCapabilitiesNode(layer);
   if (!node?.children.length) return [];
-  return Promise.all(node.children.map(async (child): Promise<NavEntryConfig> => {
-    if (!submenus.has(child.name)) return { label: child.title, layer: child.name };
-    return { label: child.title, items: await discoverChildren(child.name, submenus) };
-  }));
+  return Promise.all(
+    node.children.map(async (child): Promise<NavEntryConfig> => {
+      if (!submenus.has(child.name)) return { label: child.title, layer: child.name };
+      return { label: child.title, items: await discoverChildren(child.name, submenus) };
+    }),
+  );
 }
 
 async function fetchNavConfig(): Promise<NavConfig> {
-  const rawNav: NavFile = await fetch('/config/nav.json').then(r => r.json());
+  const rawNav: NavFile = await fetch('/config/nav.json').then((r) => r.json());
   const nav: NavConfig = {};
-  await Promise.all(Object.entries(rawNav).map(async ([key, root]) => {
-    nav[key] = await discoverChildren(root.layer, new Set(root.submenus));
-  }));
+  await Promise.all(
+    Object.entries(rawNav).map(async ([key, root]) => {
+      nav[key] = await discoverChildren(root.layer, new Set(root.submenus));
+    }),
+  );
   return nav;
 }
 

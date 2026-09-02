@@ -1,5 +1,12 @@
 import { For, Show } from 'solid-js';
-import { sidebarOpen, setSidebarOpen, mainContent, chartReportOptions, selectedChartIndex, setSelectedChartIndex } from '../stores/uiStore';
+import {
+  sidebarOpen,
+  setSidebarOpen,
+  mainContent,
+  chartReportOptions,
+  selectedChartIndex,
+  setSelectedChartIndex,
+} from '../stores/uiStore';
 import { ChartContainer } from './ChartContainer';
 import { sanitizeHtml } from '../lib/sanitize';
 
@@ -15,12 +22,16 @@ export function InfoSidebar() {
       {/* Handle tab */}
       <button
         class="absolute top-1/2 -translate-y-1/2 -left-10 w-10 py-3.5 bg-blue-600 text-white flex items-center justify-center rounded-l cursor-pointer font-bold text-base"
-        onClick={() => setSidebarOpen(o => !o)}
+        onClick={() => setSidebarOpen((o) => !o)}
         aria-label="Toggle info panel"
       >
         <Show
           when={sidebarOpen()}
-          fallback={<span class="text-center leading-tight text-xs">I<br/>N<br/>F<br/>O</span>}
+          fallback={
+            <span class="text-center leading-tight text-xs">
+              I<br />N<br />F<br />O
+            </span>
+          }
         >
           <i class="fas fa-angle-right text-xl" />
         </Show>
@@ -43,12 +54,14 @@ export function InfoSidebar() {
           </div>
           <hr class="my-2" />
           <Show when={mainContent()}>
-            {main => (
+            {(main) => (
               <div class="text-xs text-justify leading-relaxed">
                 <Show when={main().subpara}>
+                  {/* eslint-disable-next-line solid/no-innerhtml -- sanitized, see lib/sanitize.ts */}
                   <p class="mb-2" innerHTML={sanitizeHtml(main().subpara!)} />
                 </Show>
                 <Show when={main().about}>
+                  {/* eslint-disable-next-line solid/no-innerhtml -- sanitized, see lib/sanitize.ts */}
                   <p class="mb-4" innerHTML={sanitizeHtml(main().about!)} />
                 </Show>
               </div>
@@ -59,7 +72,7 @@ export function InfoSidebar() {
             <select
               class="mb-3 w-full text-xs border border-gray-300 rounded px-2 py-1.5 bg-white"
               value={selectedChartIndex()}
-              onChange={e => setSelectedChartIndex(Number(e.currentTarget.value))}
+              onChange={(e) => setSelectedChartIndex(Number(e.currentTarget.value))}
             >
               <For each={chartReportOptions()}>
                 {(option, i) => <option value={i()}>{option.title}</option>}
@@ -68,20 +81,24 @@ export function InfoSidebar() {
           </Show>
 
           <Show when={selectedReport()}>
-            {r => (
+            {(r) => (
               <div class="text-xs text-justify leading-relaxed">
-                <Show when={r().chapterHeader && r().chapterHeader !== mainContent()?.chapterHeader}>
+                <Show
+                  when={r().chapterHeader && r().chapterHeader !== mainContent()?.chapterHeader}
+                >
                   <p class="font-semibold text-sm mb-2">{r().chapterHeader}</p>
                 </Show>
                 <Show when={r().subpara}>
+                  {/* eslint-disable-next-line solid/no-innerhtml -- sanitized, see lib/sanitize.ts */}
                   <p class="mb-2" innerHTML={sanitizeHtml(r().subpara!)} />
                 </Show>
                 <Show when={r().about}>
+                  {/* eslint-disable-next-line solid/no-innerhtml -- sanitized, see lib/sanitize.ts */}
                   <p class="mb-4" innerHTML={sanitizeHtml(r().about!)} />
                 </Show>
                 <Show when={r().chartOptions?.length}>
                   <For each={r().chartOptions}>
-                    {option => (
+                    {(option) => (
                       <div class="mb-4">
                         <ChartContainer option={option} />
                       </div>

@@ -1,0 +1,3 @@
+dist/
+# Vendored GeoJSON pulled from the live production GeoServer — not hand-authored.
+demo-geoserver/data/

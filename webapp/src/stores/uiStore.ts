@@ -41,7 +41,10 @@ const [featureCharts, setFeatureChartsRaw] = createSignal<Record<string, ChartRe
 // entries — this (not the main feature's own text) is what the sidebar
 // picker offers. It shows a picker whenever there's more than one.
 export const chartReportOptions = createMemo(() =>
-  Object.values(featureCharts()).flat().filter(r => r.type === 'chart'));
+  Object.values(featureCharts())
+    .flat()
+    .filter((r) => r.type === 'chart'),
+);
 
 export const [selectedChartIndex, setSelectedChartIndex] = createSignal(0);
 
@@ -51,7 +54,7 @@ export function setSidebarContent(content: SidebarContent | null) {
 }
 
 export function setFeatureChartOptions(layerId: string, reports: ChartReportContent[]) {
-  setFeatureChartsRaw(prev => {
+  setFeatureChartsRaw((prev) => {
     if (!reports.length) {
       if (!(layerId in prev)) return prev;
       const next = { ...prev };
@@ -67,7 +70,7 @@ export function clearFeatureChartOptions(layerId: string) {
 }
 
 export function togglePanel(panel: NonNullable<ActivePanel>) {
-  setActivePanel(p => (p === panel ? null : panel));
+  setActivePanel((p) => (p === panel ? null : panel));
 }
 
 export function openPanel(panel: NonNullable<ActivePanel>) {

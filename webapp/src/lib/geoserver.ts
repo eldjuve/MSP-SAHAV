@@ -9,9 +9,29 @@ export type ScatterPoint = { year: number; value: number };
 // by `chartType` and does no further data shaping (grouping, sorting,
 // aggregating raw rows). See GEOSERVER_CHANGES.md.
 export type ChartSpec =
-  | { chartType: 'boxplot'; title: string; xLabel: string; yLabel: string; categories: string[]; data: BoxStats[] }
-  | { chartType: 'bar' | 'line'; title: string; xLabel: string; yLabel: string; categories: string[]; series: { name: string; data: number[] }[] }
-  | { chartType: 'scatter'; title: string; xLabel: string; yLabel: string; series: { name: string; data: ScatterPoint[] }[] };
+  | {
+      chartType: 'boxplot';
+      title: string;
+      xLabel: string;
+      yLabel: string;
+      categories: string[];
+      data: BoxStats[];
+    }
+  | {
+      chartType: 'bar' | 'line';
+      title: string;
+      xLabel: string;
+      yLabel: string;
+      categories: string[];
+      series: { name: string; data: number[] }[];
+    }
+  | {
+      chartType: 'scatter';
+      title: string;
+      xLabel: string;
+      yLabel: string;
+      series: { name: string; data: ScatterPoint[] }[];
+    };
 
 // One selectable report: the display text plus its charts. A feature's
 // `chart_data` is an array of these — when there's more than one, the
@@ -44,14 +64,19 @@ export async function fetchFeatureCharts(service: string): Promise<ChartBundle[]
   const workspace = getWorkspace(service);
   const localName = getLayerName(service);
   const params = new URLSearchParams({
-    service: 'WFS', version: '2.0.0', request: 'GetFeature',
-    typeName: `${workspace}:${CHART_DATA_LOCAL_NAME}`, outputFormat: 'application/json',
-    featureID: `${CHART_DATA_LOCAL_NAME}.${localName}`, propertyName: 'chart_data',
+    service: 'WFS',
+    version: '2.0.0',
+    request: 'GetFeature',
+    typeName: `${workspace}:${CHART_DATA_LOCAL_NAME}`,
+    outputFormat: 'application/json',
+    featureID: `${CHART_DATA_LOCAL_NAME}.${localName}`,
+    propertyName: 'chart_data',
   });
   try {
     const res = await fetch(`${wfsUrlForWorkspace(workspace)}?${params}`);
     if (!res.ok) return [];
-    const fc: { features?: { properties: { chart_data: ChartBundle[] | string } }[] } = await res.json();
+    const fc: { features?: { properties: { chart_data: ChartBundle[] | string } }[] } =
+      await res.json();
     const raw = fc.features?.[0]?.properties.chart_data;
     return raw ? parseJsonbField<ChartBundle[]>(raw) : [];
   } catch (e) {

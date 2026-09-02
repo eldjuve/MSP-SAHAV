@@ -15,7 +15,7 @@ function boxplotOption(spec: Extract<ChartSpec, { chartType: 'boxplot' }>): ECha
     // ECharts' boxplot series requires each point as a positional
     // [min, q1, median, q3, max] tuple — translate our named stats into
     // that shape here rather than baking ECharts' convention into the data.
-    series: [{ type: 'boxplot', data: spec.data.map(b => [b.min, b.q1, b.median, b.q3, b.max]) }],
+    series: [{ type: 'boxplot', data: spec.data.map((b) => [b.min, b.q1, b.median, b.q3, b.max]) }],
     grid: { containLabel: true, left: 16, right: 16, top: 48, bottom: 40 },
   };
 }
@@ -27,7 +27,7 @@ function columnOption(spec: Extract<ChartSpec, { chartType: 'bar' | 'line' }>): 
     legend: { show: spec.series.length > 1 },
     xAxis: { type: 'category', data: spec.categories, name: spec.xLabel },
     yAxis: { type: 'value', name: spec.yLabel },
-    series: spec.series.map(s => ({ name: s.name, type: spec.chartType, data: s.data })),
+    series: spec.series.map((s) => ({ name: s.name, type: spec.chartType, data: s.data })),
     grid: { containLabel: true, left: 16, right: 16, top: 48, bottom: 40 },
   };
 }
@@ -49,17 +49,24 @@ function scatterOption(spec: Extract<ChartSpec, { chartType: 'scatter' }>): ECha
     // ECharts' scatter series requires each point as a positional [x, y]
     // pair — translate our named points into that shape here rather than
     // baking ECharts' convention into the data.
-    series: spec.series.map(s => ({ name: s.name, type: 'scatter', data: s.data.map(p => [p.year, p.value]) })),
+    series: spec.series.map((s) => ({
+      name: s.name,
+      type: 'scatter',
+      data: s.data.map((p) => [p.year, p.value]),
+    })),
     grid: { containLabel: true, left: 16, right: 16, top: 48, bottom: 40 },
   };
 }
 
 function toOption(spec: ChartSpec): EChartsOption {
   switch (spec.chartType) {
-    case 'boxplot': return boxplotOption(spec);
+    case 'boxplot':
+      return boxplotOption(spec);
     case 'bar':
-    case 'line': return columnOption(spec);
-    case 'scatter': return scatterOption(spec);
+    case 'line':
+      return columnOption(spec);
+    case 'scatter':
+      return scatterOption(spec);
   }
 }
 

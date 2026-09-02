@@ -14,7 +14,7 @@ export type CapabilitiesNode = {
 };
 
 function directChild(el: Element | undefined, tag: string): Element | undefined {
-  return el ? Array.from(el.children).find(c => c.tagName === tag) : undefined;
+  return el ? Array.from(el.children).find((c) => c.tagName === tag) : undefined;
 }
 
 // A workspace-scoped WMS GetCapabilities response gives each layer's bare
@@ -34,7 +34,9 @@ function parseLayer(el: Element, workspace: string): CapabilitiesNode {
         [parseFloat(bboxEl.getAttribute('maxy')!), parseFloat(bboxEl.getAttribute('maxx')!)],
       )
     : undefined;
-  const children = Array.from(el.children).filter(c => c.tagName === 'Layer').map(c => parseLayer(c, workspace));
+  const children = Array.from(el.children)
+    .filter((c) => c.tagName === 'Layer')
+    .map((c) => parseLayer(c, workspace));
   return { name, title, abstract, bounds, children };
 }
 
@@ -47,12 +49,16 @@ export function fetchCapabilitiesTree(workspace: string): Promise<CapabilitiesNo
   if (cached) return cached;
   const promise = (async () => {
     try {
-      const res = await fetch(`${wmsUrlForWorkspace(workspace)}?service=WMS&version=${WMS_VERSION}&request=GetCapabilities`);
+      const res = await fetch(
+        `${wmsUrlForWorkspace(workspace)}?service=WMS&version=${WMS_VERSION}&request=GetCapabilities`,
+      );
       const xml = await res.text();
       const doc = new DOMParser().parseFromString(xml, 'application/xml');
       const rootLayer = directChild(doc.getElementsByTagName('Capability')[0], 'Layer');
       return rootLayer
-        ? Array.from(rootLayer.children).filter(c => c.tagName === 'Layer').map(c => parseLayer(c, workspace))
+        ? Array.from(rootLayer.children)
+            .filter((c) => c.tagName === 'Layer')
+            .map((c) => parseLayer(c, workspace))
         : [];
     } catch (e) {
       console.error(`Error fetching GetCapabilities for workspace "${workspace}"`, e);

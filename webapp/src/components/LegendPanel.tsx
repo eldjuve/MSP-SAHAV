@@ -9,7 +9,11 @@ function swatchStyle(swatch: LegendSwatch): Record<string, string> {
     case 'polygon':
       return { 'background-color': swatch.fill, border: `1px solid ${swatch.stroke}` };
     case 'point':
-      return { 'background-color': swatch.fill, border: `1px solid ${swatch.stroke}`, 'border-radius': '9999px' };
+      return {
+        'background-color': swatch.fill,
+        border: `1px solid ${swatch.stroke}`,
+        'border-radius': '9999px',
+      };
     case 'line':
       return { 'border-top': `2px solid ${swatch.stroke}` };
   }
@@ -36,7 +40,7 @@ function LegendEntryRow(props: { entry: LegendEntry }) {
       when={multiClass()}
       fallback={
         <div class="mb-3 flex items-center gap-2">
-          <Show when={classes()?.[0]}>{cls => <Swatch swatch={cls().swatch} />}</Show>
+          <Show when={classes()?.[0]}>{(cls) => <Swatch swatch={cls().swatch} />}</Show>
           <span class="text-xs">{props.entry.name}</span>
         </div>
       }
@@ -67,13 +71,20 @@ export function LegendPanel() {
         {/* Same title the InfoSidebar heads with (see InfoSidebar.tsx) —
             the currently-selected feature's own name, not a generic label. */}
         <span>{mainContent()?.chapterHeader || mainContent()?.title || 'Legend'}</span>
-        <button onClick={closePanel} class="text-gray-600 hover:text-red-500" aria-label="Close legend">
+        <button
+          onClick={closePanel}
+          class="text-gray-600 hover:text-red-500"
+          aria-label="Close legend"
+        >
           <i class="fas fa-times" />
         </button>
       </div>
       <div class="overflow-y-auto p-2.5 flex-1 text-sm">
-        <Show when={legendEntries().length} fallback={<p class="text-gray-500">No active layers.</p>}>
-          <For each={legendEntries()}>{entry => <LegendEntryRow entry={entry} />}</For>
+        <Show
+          when={legendEntries().length}
+          fallback={<p class="text-gray-500">No active layers.</p>}
+        >
+          <For each={legendEntries()}>{(entry) => <LegendEntryRow entry={entry} />}</For>
         </Show>
       </div>
     </div>

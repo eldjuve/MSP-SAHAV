@@ -23,7 +23,9 @@ export const WMS_VERSION = '1.1.1';
 export const [basemap, setBasemap] = createSignal<BasemapType>(
   (sessionStorage.getItem('basemap') as BasemapType | null) ?? 'imagery',
 );
-export const [layersTree, setLayersTree] = createSignal<import('../stores/configStore').LayerNode[]>([]);
+export const [layersTree, setLayersTree] = createSignal<
+  import('../stores/configStore').LayerNode[]
+>([]);
 export const [selectedLayerIds, setSelectedLayerIds] = createSignal<string[]>([]);
 export const [legendEntries, setLegendEntries] = createSignal<LegendEntry[]>([]);
 
@@ -31,7 +33,9 @@ let _map: L.Map | null = null;
 let _basemapLayer: L.TileLayer | null = null;
 const _addedLayers: Record<string, L.TileLayer.WMS> = {};
 
-export function getMap() { return _map; }
+export function getMap() {
+  return _map;
+}
 
 const BASEMAP_TILES: Record<BasemapType, () => L.TileLayer> = {
   // Pulls Google's raw tile server directly rather than through the
@@ -60,10 +64,7 @@ const BASEMAP_TILES: Record<BasemapType, () => L.TileLayer> = {
 
 export function initMapInstance(el: HTMLDivElement) {
   destroyMapInstance();
-  _map = L.map(el, { zoomControl: false, zoomSnap: 0, zoomDelta: 0.25 }).setView(
-    [11.96, 79.8],
-    9,
-  );
+  _map = L.map(el, { zoomControl: false, zoomSnap: 0, zoomDelta: 0.25 }).setView([11.96, 79.8], 9);
   L.control.zoom({ position: 'bottomright' }).addTo(_map);
   applyBasemap(basemap());
 
@@ -114,19 +115,19 @@ export function addWmsLayer(layerId: string, service: string, name: string) {
   layer.addTo(_map);
   _addedLayers[layerId] = layer;
 
-  setLegendEntries(prev => [...prev, { layerId, service, name }]);
+  setLegendEntries((prev) => [...prev, { layerId, service, name }]);
 }
 
 export function removeWmsLayer(layerId: string) {
   if (!_map || !_addedLayers[layerId]) return;
   _map.removeLayer(_addedLayers[layerId]);
   delete _addedLayers[layerId];
-  setLegendEntries(prev => prev.filter(e => e.layerId !== layerId));
+  setLegendEntries((prev) => prev.filter((e) => e.layerId !== layerId));
 }
 
 export function clearAllWmsLayers() {
   if (!_map) return;
-  Object.keys(_addedLayers).forEach(id => {
+  Object.keys(_addedLayers).forEach((id) => {
     _map!.removeLayer(_addedLayers[id]);
     delete _addedLayers[id];
   });

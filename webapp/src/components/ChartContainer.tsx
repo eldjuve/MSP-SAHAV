@@ -23,5 +23,5 @@ export function ChartContainer(props: { option: EChartsOption }) {
     chart.setOption(props.option, true);
   });
 
-  return <div ref={div} style="width: 100%; height: 280px;" />;
+  return <div ref={div} style={{ width: '100%', height: '280px' }} />;
 }

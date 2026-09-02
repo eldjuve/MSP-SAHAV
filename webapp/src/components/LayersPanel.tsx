@@ -2,7 +2,6 @@ import { createSignal, createEffect, For, Show } from 'solid-js';
 import { layersTree, selectedLayerIds, setSelectedLayerIds } from '../stores/mapStore';
 import { zoomToLayer } from '../lib/capabilities';
 import { closePanel } from '../stores/uiStore';
-import { findNodeByNumber } from '../lib/layerTree';
 import type { LayerNode } from '../stores/configStore';
 
 // A group node is never itself added as a WMS layer (see toLayerNode) — only
@@ -14,12 +13,12 @@ function leafIds(node: LayerNode): string[] {
 
 function toggleNode(node: LayerNode, checked: boolean) {
   const ids = leafIds(node);
-  setSelectedLayerIds(prev => {
+  setSelectedLayerIds((prev) => {
     if (checked) {
-      const toAdd = ids.filter(i => !prev.includes(i));
+      const toAdd = ids.filter((i) => !prev.includes(i));
       return [...prev, ...toAdd];
     }
-    return prev.filter(i => !ids.includes(i));
+    return prev.filter((i) => !ids.includes(i));
   });
 }
 
@@ -33,7 +32,7 @@ function LayerItem(props: { node: LayerNode }) {
           type="checkbox"
           id={props.node.Number}
           checked={checked()}
-          onChange={e => toggleNode(props.node, e.currentTarget.checked)}
+          onChange={(e) => toggleNode(props.node, e.currentTarget.checked)}
           class="cursor-pointer shrink-0"
         />
         <label for={props.node.Number} class="text-[#3f4346] text-xs truncate cursor-pointer">
@@ -56,10 +55,12 @@ function LayerItem(props: { node: LayerNode }) {
 function LayerGroup(props: { node: LayerNode }) {
   const [open, setOpen] = createSignal(true);
   const ids = () => leafIds(props.node);
-  const checked = () => ids().every(id => selectedLayerIds().includes(id));
-  const indeterminate = () => !checked() && ids().some(id => selectedLayerIds().includes(id));
+  const checked = () => ids().every((id) => selectedLayerIds().includes(id));
+  const indeterminate = () => !checked() && ids().some((id) => selectedLayerIds().includes(id));
   let checkboxEl!: HTMLInputElement;
-  createEffect(() => { checkboxEl.indeterminate = indeterminate(); });
+  createEffect(() => {
+    checkboxEl.indeterminate = indeterminate();
+  });
 
   return (
     <div>
@@ -70,22 +71,30 @@ function LayerGroup(props: { node: LayerNode }) {
             type="checkbox"
             id={props.node.Number}
             checked={checked()}
-            onChange={e => toggleNode(props.node, e.currentTarget.checked)}
+            onChange={(e) => toggleNode(props.node, e.currentTarget.checked)}
             class="cursor-pointer"
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           />
-          <label for={props.node.Number} class="font-bold text-sm cursor-pointer" onClick={e => e.preventDefault()}>
+          <label
+            for={props.node.Number}
+            class="font-bold text-sm cursor-pointer"
+            onClick={(e) => e.preventDefault()}
+          >
             {props.node.Name}
           </label>
         </div>
-        <button onClick={() => setOpen(o => !o)} class="ml-2">
-          <i class={`fas fa-angle-down text-sm transition-transform ${open() ? 'rotate-180' : ''}`} />
+        <button onClick={() => setOpen((o) => !o)} class="ml-2">
+          <i
+            class={`fas fa-angle-down text-sm transition-transform ${open() ? 'rotate-180' : ''}`}
+          />
         </button>
       </div>
       <Show when={open()}>
         <div class="pl-2.5">
           <For each={props.node.Children}>
-            {child => child.Children?.length ? <LayerGroup node={child} /> : <LayerItem node={child} />}
+            {(child) =>
+              child.Children?.length ? <LayerGroup node={child} /> : <LayerItem node={child} />
+            }
           </For>
         </div>
       </Show>
@@ -98,14 +107,23 @@ export function LayersPanel() {
     <div class="absolute top-4 right-25 bg-white rounded-xl shadow-md w-72 max-h-125 flex flex-col overflow-hidden">
       <div class="flex justify-between items-center bg-gray-100 px-2.5 py-2.5 rounded-t-xl font-bold">
         <span>Layers</span>
-        <button onClick={closePanel} class="text-gray-600 hover:text-red-500" aria-label="Close layers panel">
+        <button
+          onClick={closePanel}
+          class="text-gray-600 hover:text-red-500"
+          aria-label="Close layers panel"
+        >
           <i class="fas fa-times" />
         </button>
       </div>
       <div class="overflow-y-auto p-2 flex-1">
-        <Show when={layersTree().length} fallback={<p class="text-sm text-gray-500 p-2">No layers loaded.</p>}>
+        <Show
+          when={layersTree().length}
+          fallback={<p class="text-sm text-gray-500 p-2">No layers loaded.</p>}
+        >
           <For each={layersTree()}>
-            {node => node.Children?.length ? <LayerGroup node={node} /> : <LayerItem node={node} />}
+            {(node) =>
+              node.Children?.length ? <LayerGroup node={node} /> : <LayerItem node={node} />
+            }
           </For>
         </Show>
       </div>

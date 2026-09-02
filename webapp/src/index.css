@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "leaflet/dist/leaflet.css";
+@import 'tailwindcss';
+@import 'leaflet/dist/leaflet.css';
 
 @theme {
   --color-msp-primary: #78c5de;
@@ -9,7 +9,8 @@
   --font-sans: 'Open Sans', sans-serif;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -24,10 +25,21 @@ html, body {
 }
 
 /* Thin scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: #555; }
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
 
 /* Dropdown menu (shadcn-style) */
 @layer components {
@@ -53,7 +65,7 @@ html, body {
 /* Leaflet overrides */
 .leaflet-control-zoom {
   border: none !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
 }
 .leaflet-control-zoom a {
   border: none !important;

@@ -20,7 +20,6 @@ const NAV_ITEMS = [
   { label: 'Lakshadweep (demo)', key: 'lakshadweep' },
 ];
 
-
 function NavDropdownItem(props: { item: NavEntryConfig }) {
   const hasChildren = () => (props.item.items?.length ?? 0) > 0;
 
@@ -40,9 +39,7 @@ function NavDropdownItem(props: { item: NavEntryConfig }) {
         </DropdownMenu.SubTrigger>
         <DropdownMenu.Portal>
           <DropdownMenu.SubContent class="dd-content">
-            <For each={props.item.items}>
-              {child => <NavDropdownItem item={child} />}
-            </For>
+            <For each={props.item.items}>{(child) => <NavDropdownItem item={child} />}</For>
           </DropdownMenu.SubContent>
         </DropdownMenu.Portal>
       </DropdownMenu.Sub>
@@ -59,7 +56,7 @@ export function Navbar() {
         {/* Mobile hamburger */}
         <button
           class="absolute left-4 top-1/2 -translate-y-1/2 md:hidden text-[#36383a] p-1"
-          onClick={() => setMobileOpen(o => !o)}
+          onClick={() => setMobileOpen((o) => !o)}
           aria-label="Toggle navigation"
         >
           <i class="fas fa-bars text-lg" />
@@ -70,8 +67,8 @@ export function Navbar() {
           class={`flex-col md:flex-row flex-wrap md:flex items-start md:items-center gap-x-1 bg-white md:bg-transparent absolute md:relative top-full left-0 right-0 md:top-auto shadow-md md:shadow-none p-3 md:p-0 z-[1100] ${mobileOpen() ? 'flex' : 'hidden md:flex'}`}
         >
           <For each={NAV_ITEMS}>
-            {nav => {
-              const menuData = () => nav.key ? navConfig()?.[nav.key] : null;
+            {(nav) => {
+              const menuData = () => (nav.key ? navConfig()?.[nav.key] : null);
               const hasMenu = () => !!menuData()?.length;
 
               return (
@@ -94,9 +91,7 @@ export function Navbar() {
                       </DropdownMenu.Trigger>
                       <DropdownMenu.Portal>
                         <DropdownMenu.Content class="dd-content">
-                          <For each={menuData()!}>
-                            {item => <NavDropdownItem item={item} />}
-                          </For>
+                          <For each={menuData()!}>{(item) => <NavDropdownItem item={item} />}</For>
                         </DropdownMenu.Content>
                       </DropdownMenu.Portal>
                     </DropdownMenu>
